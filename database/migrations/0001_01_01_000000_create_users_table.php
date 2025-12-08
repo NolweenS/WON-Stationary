@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Het opstellen van de migration aan de hand van de gemaakte databaseschema
      */
     public function up(): void
     {
@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->boolean('is_admin')->default(false);
+            $table->string('phone',20)->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
