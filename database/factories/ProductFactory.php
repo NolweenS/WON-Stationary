@@ -9,7 +9,7 @@ class ProductFactory extends Factory
 {
 public function definition():array
 {
-    //eerst een naam genereren zodat we het voor de 'slug' kunnen hergebruiken
+    //eerst een naam genereren zodat we het voor de 'slug' onderdeel kunnen hergebruiken
     $name = fake()->unique()->words(rand(2,4),true);
     return
         [
@@ -19,6 +19,7 @@ public function definition():array
             'description' => fake()->paragraph(3),
             'price' => fake()->randomFloat(2, 5, 500),
             'image' => null,
+            'stock' => fake()->numberBetween(0, 50),
             'is_featured' => fake()->boolean(10),
 
         ];

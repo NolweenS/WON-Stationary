@@ -82,7 +82,7 @@ class User extends Authenticatable
     //Een wishlist kan meerdere producten bevattem
     public function wishlist()
     {
-        return $this->belongsToMany(Porduct::class,'wishlists')
+        return $this->belongsToMany(Product::class,'wishlists')
             ->withTimestamps();
     }
     //Favorieten met meerdere producten
@@ -90,6 +90,11 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Product::class,'user_favorites')
             ->withTimestamps();
+    }
+
+    public function wishlists()
+    {
+        return $this->belongsToMany(Product::class, 'wishlists');
     }
     public function newsArticles()
     {

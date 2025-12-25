@@ -13,7 +13,7 @@ class CategoryFactory extends Factory
             'name' => ucfirst($name),
             'slug' => Str::slug($name),
             'description' => fake()->sentence(),
-            'image' => null,
+            //'image' => null,
         ];
 
     }

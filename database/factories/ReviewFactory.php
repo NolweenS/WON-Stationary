@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,9 +19,11 @@ class ReviewFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id' => User::factory(),
+            'product_id' => Product::factory(),
             'rating'=>fake()->numberBetween(1,5),
             'comment'=>fake()->boolean(80) ? fake()->paragraph(): null,
-            'created_at'=>fake()->dateTime('-1year','now'),
+            'created_at'=>fake()->dateTimeBetween('-1year','now'),
         ];
     }
 }
