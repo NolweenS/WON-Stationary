@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class News extends Model
 {
-    use HasFactory,softDeletes;
+    use HasFactory,SoftDeletes;
     protected $table = 'news';
     protected $fillable =
         [
@@ -24,6 +24,11 @@ class News extends Model
         [
             'published_at' => 'datetime',
         ];
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
     public function author()
     {
         return $this->belongsTo(User::class, 'author_id');
@@ -34,7 +39,7 @@ class News extends Model
         return $query->where('published_at', '<=', now());
     }
     //Nieuwste nieuws eerst weergeven
-    public function scopeLatest($query)
+    public function scopeLatestPublished($query)
     {
         return $query->orderBy('published_at', 'desc');
     }
@@ -51,6 +56,7 @@ class News extends Model
      {
          return asset('storage/' . $this->image);
      }
+     //een
      return asset('images/default.png');
     }
 
@@ -77,4 +83,10 @@ class News extends Model
     {
         return $this->published_at->isAfter(now()->subDays(7));
     }
+    public function excerpt($limit = 100)
+    {
+        return \Illuminate\Support\Str::limit(strip_tags($this->content), $limit);
+    }
+
+
 }

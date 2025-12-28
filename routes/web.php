@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\NewsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -18,4 +19,10 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
+Route::resource('news', NewsController::class)->parameters([
+    'news' => 'news:slug'
+]);
 require __DIR__.'/auth.php';
+
+
+

@@ -49,20 +49,21 @@ class ProfileController extends Controller
             'profile_photo.max'=> 'Image size is too large',
         ]);
 
-        //Profiel ophalen of aanmaken
-        $profile = $user->profile() ?? Profile::create(['user_id'=>$user->id]);
-
-        //uploadenvan afbeelding
+        //uploaden van afbeelding
         if ($request->hasFile('profile_photo')) {
-            if($profile->profile_photo){
-                Storage::disk('public')->delete($profile->profile_photo);
+            if($user->profile && $user->profile->profile_photo){
+                Storage::disk('public')->delete($user->profile->profile_photo);
             }
             //Upload een nieuwe afbeelding
             $path = $request->file('profile_photo')->store('profiles', 'public');
             $validated['profile_photo'] = $path;
         }
-        //Profiel updaten
-        $profile->update($validated);
+
+        //profiel updaten of aanmaken
+        $user->profile()->updateOrCreate(
+            ['user_id'=>$user->id],
+            $validated
+        );
 
         return redirect()
             ->route('profile.show', $user)

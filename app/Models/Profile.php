@@ -15,7 +15,7 @@ class Profile extends Model
         'username',
         'birthday',
         'profile_photo',
-        'about_me'
+        'about_me',
 
     ];
 
