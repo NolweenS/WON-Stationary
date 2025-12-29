@@ -16,6 +16,11 @@
                     <x-nav-link :href="route('news.index')" :active="request()->routeIs('news.*')">
                         {{ __('Nieuws') }}
                     </x-nav-link>
+
+                    {{-- FAQ Link toegevoegd --}}
+                    <x-nav-link :href="route('faq.index')" :active="request()->routeIs('faq.*')">
+                        {{ __('FAQ') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -77,6 +82,11 @@
             <x-responsive-nav-link :href="route('news.index')" :active="request()->routeIs('news.*')">
                 {{ __('Nieuws') }}
             </x-responsive-nav-link>
+
+            {{-- Mobile FAQ Link toegevoegd --}}
+            <x-responsive-nav-link :href="route('faq.index')" :active="request()->routeIs('faq.*')">
+                {{ __('FAQ') }}
+            </x-responsive-nav-link>
         </div>
 
         <div class="pt-4 pb-1 border-t border-[#EAE5DE]">
@@ -111,3 +121,4 @@
         </div>
     </div>
 </nav>
+

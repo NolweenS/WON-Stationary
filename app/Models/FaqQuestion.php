@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Str;
 
 class FaqQuestion extends Model
 {
@@ -47,10 +47,6 @@ class FaqQuestion extends Model
     // Het vraag verkorten
     public function shortQuestion(int $length = 80): string
     {
-        if (strlen($this->question) <= $length) {
-            return $this->question;
-        }
-
-        return substr($this->question, 0, $length) . '...';
+        return Str::limit($this->question, $length);
     }
 }

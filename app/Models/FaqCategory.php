@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class FaqCategory extends Model
 {
-    use hasFactory;
+    use HasFactory;
 
     protected $fillable =
         [
@@ -23,8 +23,8 @@ class FaqCategory extends Model
 
     public function questions()
     {
-        return $this ->hasmany(FagQuestion::class)
-            ->orderByDesc('order');
+        return $this ->hasmany(FaqQuestion::class)
+            ->orderBy('order');
     }
 
     public function scopeOrdered($query)
