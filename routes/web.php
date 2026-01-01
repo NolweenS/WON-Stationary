@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\FAQController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\Admin\UserManagementController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -45,7 +47,23 @@ Route::prefix('admin/faq')->middleware(['auth'])->group(function () {
     Route::put('/questions/{question}', [FAQController::class, 'questionsUpdate'])->name('faq.admin.questions.update');
     Route::delete('/questions/{question}', [FAQController::class, 'questionsDestroy'])->name('faq.admin.questions.destroy');
 });
+//Contact Routes
+Route::get('/contact', [ContactController::class, 'show'])->name('contact.show');
+Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
+// Alles in deze groep kan enkel gebeuren waren je ingelogd bent als admin(is_admin = true)
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+
+    // Lijst en Aanmaken
+    Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [UserManagementController::class, 'create'])->name('users.create');
+    Route::post('/users', [UserManagementController::class, 'store'])->name('users.store');
+
+    // Acties (Promote,Demote,Delete)
+    Route::patch('/users/{user}/promote', [UserManagementController::class, 'promote'])->name('users.promote');
+    Route::patch('/users/{user}/demote', [UserManagementController::class, 'demote'])->name('users.demote');
+    Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
+});
 require __DIR__.'/auth.php';
 
 

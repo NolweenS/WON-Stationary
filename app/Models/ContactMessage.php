@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class ContactMessage extends Model
 {
     use HasFactory;
 
-    Protected $fillable =
+    protected $fillable =
         [
             'name',
             'email',
@@ -36,7 +37,7 @@ class ContactMessage extends Model
     }
 
     //Nieuwste eerst
-    public function scopeLatest($query)
+    public function scopeNieuwste($query)
     {
         return $query->orderBy('created_at', 'desc');
     }
@@ -73,11 +74,7 @@ class ContactMessage extends Model
     //Voor de admin een verkorte bericht preview
     public function preview(int $length = 100): string
     {
-        if (strlen($this->message) <= $length) {
-            return $this->message;
-        }
-
-        return substr($this->message, 0, $length) . '...';
+        return Str::limit($this->message, $length);
     }
 
     //Weergeven van aantal ongelezen berichten
