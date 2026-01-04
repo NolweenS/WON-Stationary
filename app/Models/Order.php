@@ -19,7 +19,7 @@ class Order extends Model
         'shipping_name',
         'shipping_address',
         'shipping_city',
-        'shipping_postal_code',
+        'shipping_postal',
         'shipping_country',
         'shipping_phone',
         'notes',
@@ -103,13 +103,15 @@ class Order extends Model
     //we gaan de status updaten en stock terug zetten
     public function cancel():void
     {
-        if($this->canBeCancelled())
+        if(!$this->canBeCancelled())
         {
             return;
         }
         foreach($this->items as $item)
         {
-            $item->product->increaseStock($item->quantity);
+            if ($item->product) {
+                $item->product->increaseStock($item->quantity);
+            }
         }
         $this->update(['status'=>'cancelled']);
     }
