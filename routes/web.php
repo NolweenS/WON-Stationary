@@ -7,6 +7,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -88,6 +89,12 @@ Route::prefix('admin')
         // Categories
         Route::resource('categories', CategoryController::class)->except(['show']);
     });
+
+// Winkelwagen Routes
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
+Route::patch('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
 require __DIR__.'/auth.php';
 
