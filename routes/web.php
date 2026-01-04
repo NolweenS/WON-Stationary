@@ -5,6 +5,8 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\FAQController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Admin\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -47,11 +49,12 @@ Route::prefix('admin/faq')->middleware(['auth'])->group(function () {
     Route::put('/questions/{question}', [FAQController::class, 'questionsUpdate'])->name('faq.admin.questions.update');
     Route::delete('/questions/{question}', [FAQController::class, 'questionsDestroy'])->name('faq.admin.questions.destroy');
 });
+
 //Contact Routes
 Route::get('/contact', [ContactController::class, 'show'])->name('contact.show');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
-// Alles in deze groep kan enkel gebeuren waren je ingelogd bent als admin(is_admin = true)
+// Alles in deze groep kan enkel gebeuren wanneer je ingelogd bent als admin(is_admin = true)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
 
     // Lijst en Aanmaken
@@ -64,6 +67,28 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/users/{user}/demote', [UserManagementController::class, 'demote'])->name('users.demote');
     Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
 });
+
+// Public Product routes
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
+
+// Admin Product routes
+Route::prefix('admin')
+    ->middleware(['auth', 'admin'])
+    ->name('admin.')
+    ->group(function () {
+
+        // Products
+        Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+        Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+        Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+        Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
+        Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+
+        // Categories
+        Route::resource('categories', CategoryController::class)->except(['show']);
+    });
+
 require __DIR__.'/auth.php';
 
 

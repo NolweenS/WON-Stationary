@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Category extends Model
 {
     // Representeert product categorieen (Pens,Highlighters,..)
-    use HasFactory, softDeletes;
+    use HasFactory, SoftDeletes; // <-- Let op: Hoofdletter 'S' hier!
 
     //Mass-assignable attributes
     protected $fillable = [
@@ -19,21 +19,25 @@ class Category extends Model
         'description',
         'image'
     ];
+
     // category heeft meerdere producten
     public function products()
     {
         return $this->hasMany(Product::class);
     }
+
     //We gaan gaan door de categorien die wel producten hebben
     public function scopeWithProducts($query)
     {
         return $query->has('products');
     }
+
     //Sorteren op naam
-    public function scopeOrderd($query)
+    public function scopeOrdered($query) // <-- Let op: 'Ordered' met een 'e'
     {
         return $query->orderBy('name', 'asc');
     }
+
     //We halen de category url image op
     public function imageUrl():string
     {
@@ -43,11 +47,13 @@ class Category extends Model
         }
         return asset('images/default.png');
     }
+
     // De aantal producten bijhouden
     public function productCount(): int
     {
         return $this->products()->count();
     }
+
     // De voorraad van de producten per category
     public function inStockCount(): int
     {

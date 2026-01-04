@@ -13,20 +13,33 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    @if(Auth::user()->is_admin)
-                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                            {{ __('Users') }}
-                        </x-nav-link>
-                    @endif
+                    {{-- Public: Producten --}}
+                    <x-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
+                        {{ __('Producten') }}
+                    </x-nav-link>
 
                     <x-nav-link :href="route('news.index')" :active="request()->routeIs('news.*')">
                         {{ __('Nieuws') }}
                     </x-nav-link>
 
-                    {{-- FAQ Link toegevoegd --}}
                     <x-nav-link :href="route('faq.index')" :active="request()->routeIs('faq.*')">
                         {{ __('FAQ') }}
                     </x-nav-link>
+
+                    <x-nav-link :href="route('contact.show')" :active="request()->routeIs('contact.*')">
+                        {{ __('Contact') }}
+                    </x-nav-link>
+
+                    {{-- Admin Links --}}
+                    @if(Auth::check() && Auth::user()->is_admin)
+                        <x-nav-link :href="route('admin.categories.index')" :active="request()->routeIs('admin.categories.*')">
+                            {{ __('Categorieën') }}
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                            {{ __('Users') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -85,14 +98,39 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
 
+            {{-- Mobile: Producten --}}
+            <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
+                {{ __('Producten') }}
+            </x-responsive-nav-link>
+
             <x-responsive-nav-link :href="route('news.index')" :active="request()->routeIs('news.*')">
                 {{ __('Nieuws') }}
             </x-responsive-nav-link>
 
-            {{-- Mobile FAQ Link toegevoegd --}}
             <x-responsive-nav-link :href="route('faq.index')" :active="request()->routeIs('faq.*')">
                 {{ __('FAQ') }}
             </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('contact.show')" :active="request()->routeIs('contact.*')">
+                {{ __('Contact') }}
+            </x-responsive-nav-link>
+
+            {{-- Mobile: Admin Links --}}
+            @if(Auth::check() && Auth::user()->is_admin)
+                <div class="border-t border-[#EAE5DE] mt-2 pt-2">
+                    <div class="px-4 text-xs text-[#8C7B70] uppercase font-bold mb-1">
+                        Admin Beheer
+                    </div>
+
+                    <x-responsive-nav-link :href="route('admin.categories.index')" :active="request()->routeIs('admin.categories.*')">
+                        {{ __('Categorieën') }}
+                    </x-responsive-nav-link>
+
+                    <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                        {{ __('Users') }}
+                    </x-responsive-nav-link>
+                </div>
+            @endif
         </div>
 
         <div class="pt-4 pb-1 border-t border-[#EAE5DE]">
@@ -127,4 +165,3 @@
         </div>
     </div>
 </nav>
-
