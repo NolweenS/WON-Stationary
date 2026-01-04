@@ -95,7 +95,7 @@ class Product extends Model
 
     //We gaan de gemiddelde berekenen voor een review score
     //In de controllers en View aan passen
-    public function avarageRating(int $decimals = 1):float
+    public function averageRating(int $decimals = 1):float
     {
         $score = $this->getAttribute('reviews_avg_rating');
         if ($score === null) {

@@ -8,21 +8,32 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            {{-- Melding na bewerken --}}
+            {{-- Melding na bewerken/reviewen --}}
             @if(session('success'))
                 <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)" class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
                     {{ session('success') }}
                 </div>
             @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            @if(session('error'))
+                <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            {{-- PRODUCT DETAILS SECTIE --}}
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-12">
                 <div class="p-6 text-gray-900">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
 
                         {{-- Linkerkolom: Afbeelding --}}
                         <div class="relative">
                             <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
-                                <img src="{{ $product->imageUrl() }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                                @if($product->image)
+                                    <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                                @else
+                                    <div class="text-gray-400 text-lg">Geen afbeelding</div>
+                                @endif
                             </div>
 
                             @if($product->is_featured)
@@ -37,10 +48,18 @@
 
                         {{-- Rechterkolom: Details --}}
                         <div class="flex flex-col">
-                            <div class="mb-2">
+                            <div class="mb-2 flex justify-between items-start">
                                 <span class="text-sm text-gray-500 uppercase tracking-wide">
                                     {{ $product->category->name ?? 'Geen categorie' }}
                                 </span>
+
+                                {{-- Korte rating weergave bovenaan --}}
+                                @if($product->reviews->count() > 0)
+                                    <div class="flex items-center text-yellow-400 text-sm">
+                                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                        <span class="ml-1 text-gray-600 font-medium">{{ number_format($product->averageRating(), 1) }}</span>
+                                    </div>
+                                @endif
                             </div>
 
                             <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ $product->name }}</h1>
@@ -78,6 +97,7 @@
 
                                 {{-- Actieknoppen --}}
                                 <div class="flex flex-col sm:flex-row gap-4">
+                                    {{-- Toevoegen aan winkelwagen --}}
                                     <form action="{{ route('cart.add', $product->id) }}" method="POST" class="flex-1">
                                         @csrf
                                         <button type="submit"
@@ -120,15 +140,185 @@
                 </div>
             </div>
 
-            {{-- Gerelateerde Producten --}}
-            @if($relatedProducts->count() > 0)
+            {{-- SECTIE: REVIEWS EN BEOORDELINGEN --}}
+            <div class="mt-12 bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Klantbeoordelingen</h3>
+
+                    {{-- Deel 1: Score Samenvatting --}}
+                    <div class="flex items-center mb-10 bg-gray-50 p-4 rounded-lg inline-block border border-gray-100">
+                        <div class="flex items-center">
+                            @php $avgRating = round($product->averageRating()); @endphp
+                            @for ($i = 1; $i <= 5; $i++)
+                                <svg class="w-6 h-6 {{ $i <= $avgRating ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                            @endfor
+                        </div>
+                        <p class="ml-3 text-sm font-medium text-gray-600">
+                            <span class="text-gray-900 font-bold text-lg">{{ number_format($product->averageRating(), 1) }}</span> / 5
+                            <span class="text-gray-300 mx-2">|</span>
+                            {{ $product->reviews->count() }} reviews
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+                        {{-- Deel 2: Het Review Formulier (Linkerkant - 5 kolommen) --}}
+                        <div class="lg:col-span-5">
+                            @auth
+                                {{-- Check: Heeft deze user al een review geschreven? --}}
+                                @if($product->reviews->where('user_id', auth()->id())->count() > 0)
+                                    <div class="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+                                        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+                                            <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </div>
+                                        <h4 class="text-green-800 font-semibold text-lg">Bedankt voor uw feedback!</h4>
+                                        <p class="text-green-700 mt-2 text-sm">U heeft dit product al beoordeeld.</p>
+                                    </div>
+                                @else
+                                    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                                        <h4 class="text-lg font-bold text-gray-900 mb-4">Schrijf een review</h4>
+
+                                        <form action="{{ route('reviews.store', $product) }}" method="POST">
+                                            @csrf
+
+                                            {{-- Rating Selectie --}}
+                                            <div class="mb-5">
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Uw waardering</label>
+                                                <div class="flex flex-row-reverse justify-end gap-1 group">
+                                                    {{-- Slimme CSS truck: flex-row-reverse zodat we hover effecten kunnen doen --}}
+                                                    @for($i = 5; $i >= 1; $i--)
+                                                        <input type="radio" id="star{{$i}}" name="rating" value="{{ $i }}" class="peer hidden" required />
+                                                        <label for="star{{$i}}" class="cursor-pointer text-gray-300 peer-checked:text-yellow-400 hover:text-yellow-400 peer-hover:text-yellow-400 transition-colors">
+                                                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                                        </label>
+                                                    @endfor
+                                                </div>
+                                                @error('rating') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                            </div>
+
+                                            {{-- Commentaar Veld --}}
+                                            <div class="mb-5">
+                                                <label for="comment" class="block text-sm font-medium text-gray-700 mb-2">Uw ervaring (optioneel)</label>
+                                                <textarea name="comment" id="comment" rows="4"
+                                                          class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm placeholder-gray-400"
+                                                          placeholder="Vertel ons wat u van het product vindt..."></textarea>
+                                                @error('comment') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                            </div>
+
+                                            <button type="submit" class="w-full bg-indigo-600 text-white py-3 px-4 rounded-md hover:bg-indigo-700 transition font-bold shadow-sm text-sm">
+                                                Plaats Review
+                                            </button>
+                                        </form>
+                                    </div>
+                                @endif
+                            @else
+                                {{-- Niet ingelogd melding --}}
+                                <div class="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+                                    <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                                    </svg>
+                                    <h4 class="text-gray-900 font-medium mb-2">Wilt u een review schrijven?</h4>
+                                    <p class="text-gray-500 mb-6 text-sm">Log in of maak een account aan om uw mening te delen.</p>
+                                    <div class="flex gap-4 justify-center">
+                                        <a href="{{ route('login') }}" class="text-indigo-600 font-bold hover:underline">Inloggen</a>
+                                        <span class="text-gray-300">|</span>
+                                        <a href="{{ route('register') }}" class="text-indigo-600 font-bold hover:underline">Registreren</a>
+                                    </div>
+                                </div>
+                            @endauth
+                        </div>
+
+                        {{-- Deel 3: Lijst met Reviews (Rechterkant - 7 kolommen) --}}
+                        <div class="lg:col-span-7">
+                            @if($product->reviews->count() > 0)
+                                <div class="space-y-6">
+                                    @foreach($product->reviews as $review)
+                                        <div class="bg-white p-6 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                                            <div class="flex justify-between items-start">
+                                                <div class="flex items-center">
+                                                    {{-- Avatar Placeholder (Initialen) --}}
+                                                    <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm border border-indigo-200">
+                                                        {{ substr($review->user->name, 0, 1) }}
+                                                    </div>
+                                                    <div class="ml-3">
+                                                        <p class="text-sm font-bold text-gray-900">
+                                                            {{ $review->user->name }}
+                                                            @if(auth()->check() && auth()->id() === $review->user_id)
+                                                                <span class="ml-2 text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full border border-gray-200">Jij</span>
+                                                            @endif
+                                                        </p>
+                                                        {{-- Gebruik de timeAgo methode uit je model --}}
+                                                        <p class="text-xs text-gray-500">{{ $review->timeAgo() }}</p>
+                                                    </div>
+                                                </div>
+
+                                                {{-- Sterren weergave bij review --}}
+                                                <div class="flex text-yellow-400">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        <svg class="w-4 h-4 {{ $i <= $review->rating ? 'fill-current' : 'text-gray-200' }}" viewBox="0 0 20 20">
+                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                        </svg>
+                                                    @endfor
+                                                </div>
+                                            </div>
+
+                                            @if($review->comment)
+                                                <div class="mt-4 text-gray-700 text-sm leading-relaxed bg-gray-50 p-3 rounded-md border border-gray-50">
+                                                    {{ $review->comment }}
+                                                </div>
+                                            @endif
+
+                                            {{-- Verwijderknop: Alleen zichtbaar voor admin of de auteur --}}
+                                            @auth
+                                                @if(auth()->user()->is_admin || auth()->id() === $review->user_id)
+                                                    <div class="mt-3 flex justify-end">
+                                                        <form action="{{ route('reviews.destroy', $review) }}" method="POST" onsubmit="return confirm('Weet u zeker dat u deze review wilt verwijderen?');">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="text-xs text-red-500 hover:text-red-700 font-medium flex items-center transition-colors">
+                                                                <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                                </svg>
+                                                                Review verwijderen
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                @endif
+                                            @endauth
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="flex flex-col items-center justify-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                                    <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    </svg>
+                                    <p class="text-gray-500 font-medium">Nog geen reviews.</p>
+                                    <p class="text-sm text-gray-400">Wees de eerste om dit product te beoordelen!</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Gerelateerde Producten Sectie --}}
+            @if(isset($relatedProducts) && $relatedProducts->count() > 0)
                 <div class="mt-12">
                     <h3 class="text-xl font-bold text-gray-900 mb-6">Andere klanten bekeken ook</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                         @foreach($relatedProducts as $related)
                             <a href="{{ route('products.show', $related) }}" class="group bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
                                 <div class="aspect-square bg-gray-100 overflow-hidden">
-                                    <img src="{{ $related->imageUrl() }}" alt="{{ $related->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                                    @if($related->image)
+                                        <img src="{{ Storage::url($related->image) }}" alt="{{ $related->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center text-gray-400">Geen foto</div>
+                                    @endif
                                 </div>
                                 <div class="p-4">
                                     <p class="text-sm text-gray-500 mb-1">{{ $related->category->name }}</p>
