@@ -45,4 +45,24 @@ class Profile extends Model
         return $this->birthday->format('m-d') === now()->format('m-d');
     }
 
+    public function nextBirthday()
+    {
+        if (!$this->birthday) {
+            return null;
+        }
+
+        // Formatteer de datum naar dag en maand (12 januari)
+        return $this->birthday->translatedFormat('d F');
+    }
+
+    //
+    public function age()
+    {
+        if (!$this->birthday) {
+            return null;
+        }
+
+        return $this->birthday->age;
+    }
+
 }

@@ -11,11 +11,13 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\ProfileMessageController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('home');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -114,6 +116,28 @@ Route::middleware('auth')->group(function () {
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 });
 
+// Wishlist routes (authenticated users only)
+Route::middleware('auth')->group(function () {
+    Route::get('/wishlist', [WishlistController::class, 'index'])
+        ->name('wishlist.index');
+    Route::post('/wishlist/{product}', [WishlistController::class, 'store'])
+        ->name('wishlist.store');
+    Route::delete('/wishlist/{product}', [WishlistController::class, 'destroy'])
+        ->name('wishlist.destroy');
+    Route::post('/wishlist/{product}/toggle', [WishlistController::class, 'toggle'])
+        ->name('wishlist.toggle');
+});
+
+// Profile Message Routes
+Route::post('/profile/{user}/message', [App\Http\Controllers\ProfileMessageController::class, 'store'])->name('profile.message.store');
+Route::delete('/profile/message/{message}', [App\Http\Controllers\ProfileMessageController::class, 'destroy'])->name('profile.message.destroy');
+
+
+//notification route
+Route::post('/notifications/mark-as-read', function () {
+    auth()->user()->unreadNotifications->markAsRead();
+    return back();
+})->name('notifications.markRead');
 require __DIR__.'/auth.php';
 
 

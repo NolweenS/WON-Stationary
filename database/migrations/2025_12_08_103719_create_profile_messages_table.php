@@ -22,7 +22,7 @@ return new class extends Migration
                 ->constrained('users')
                 ->onDelete('cascade');
             $table->text('message');
-            $table->boolean('read')->default(false);
+            $table->boolean('is_read')->default(false);
             $table->timestamps();
         });
     }

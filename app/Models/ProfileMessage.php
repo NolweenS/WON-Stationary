@@ -14,11 +14,14 @@ class ProfileMessage extends Model
             'to_user_id',
             'message',
             'is_read',
+            'parent_id'
         ];
     protected $casts =
         [
             'is_read' => 'boolean',
         ];
+
+
     public function sender()
     {
         return $this->belongsTo(User::class, 'from_user_id');
@@ -26,6 +29,17 @@ class ProfileMessage extends Model
     public function receiver()
     {
         return $this->belongsTo(User::class, 'to_user_id');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(ProfileMessage::class, 'parent_id');
+    }
+
+    //antwoorden op het bericht zelf
+    public function replies()
+    {
+        return $this->hasMany(ProfileMessage::class, 'parent_id');
     }
     //Weergeven van ongelezen berichten
     public function scopeUnread($query)
@@ -70,6 +84,6 @@ class ProfileMessage extends Model
         }
 
         // Ontvanger of admin kan verwijderen
-        return $user->id === $this->to_user_id || $user->is_admin;
+        return $user->id === $this->from_user_id || $user->is_admin;
     }
 }

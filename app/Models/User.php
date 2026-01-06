@@ -10,20 +10,11 @@ use phpDocumentor\Reflection\DocBlock\Tags\Reference\Url;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory>
-     *De 'use' hieronder activeert de Traits (extra functionaliteiten)
-     * HasFactory: om nepdata te genereren voor testen/seeden
-     * Notifiable: om emials te kunnen sturen naar de user
-     */
+
     // we gebruiken hun functies
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     * De velden die we mogen invullen
-     *
-     * @var list<string>
-     */
+
     protected $fillable = [
         'name',
         'email',
@@ -42,8 +33,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-
-
     /**
      * Get the attributes that should be cast.
      *
@@ -54,7 +43,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'is-admin' => 'boolean',
+            'is_admin' => 'boolean', // AANGEPAST: Dit was 'is-admin', maar moet matchen met je database kolom
         ];
     }
     //We gaan de relaties voor de website opstellen
@@ -100,13 +89,26 @@ class User extends Authenticatable
     {
         return $this->hasMany(News::class, 'author_id');
     }
+
+    // --- BERICHTEN SYSTEEM ---
+
     public function sentMessages()
     {
         return $this->hasMany(ProfileMessage::class, 'from_user_id');
     }
+
+    // Dit haalt ALLES op (inclusief antwoorden), handig voor tellers
     public function receivedMessages()
     {
         return $this->hasMany(ProfileMessage::class, 'to_user_id');
+    }
+
+    // Het haalt alleen de HOOFDBERICHTEN op (dus geen antwoorden).
+    public function profileMessages()
+    {
+        return $this->hasMany(ProfileMessage::class, 'to_user_id')
+            ->whereNull('parent_id')
+            ->latest();
     }
 
     // We moeten na kijken of de user admin is
@@ -116,10 +118,9 @@ class User extends Authenticatable
     }
 
     //We kijken na of een bepaalde product ind e wishlist staat
-    public function hasInWhislists(Product $product):bool
+    public function hasInWishlist(Product $product): bool
     {
-        return $this->whishlist
-            ->contains($product);
+        return $this->wishlist->contains($product);
     }
 
     //We kijken na of de producten in favorites staat

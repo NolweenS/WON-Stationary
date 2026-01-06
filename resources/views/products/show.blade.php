@@ -8,7 +8,6 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            {{-- Melding na bewerken/reviewen --}}
             @if(session('success'))
                 <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)" class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
                     {{ session('success') }}
@@ -21,12 +20,10 @@
                 </div>
             @endif
 
-            {{-- PRODUCT DETAILS SECTIE --}}
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-12">
                 <div class="p-6 text-gray-900">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
 
-                        {{-- Linkerkolom: Afbeelding --}}
                         <div class="relative">
                             <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
                                 @if($product->image)
@@ -46,14 +43,12 @@
                             @endif
                         </div>
 
-                        {{-- Rechterkolom: Details --}}
                         <div class="flex flex-col">
                             <div class="mb-2 flex justify-between items-start">
                                 <span class="text-sm text-gray-500 uppercase tracking-wide">
                                     {{ $product->category->name ?? 'Geen categorie' }}
                                 </span>
 
-                                {{-- Korte rating weergave bovenaan --}}
                                 @if($product->reviews->count() > 0)
                                     <div class="flex items-center text-yellow-400 text-sm">
                                         <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
@@ -75,7 +70,6 @@
                                     </span>
                                 </div>
 
-                                {{-- Voorraad Status --}}
                                 <div class="mb-6 flex items-center">
                                     @if($product->stock > 5)
                                         <span class="flex items-center text-green-600 font-medium">
@@ -95,9 +89,7 @@
                                     @endif
                                 </div>
 
-                                {{-- Actieknoppen --}}
                                 <div class="flex flex-col sm:flex-row gap-4">
-                                    {{-- Toevoegen aan winkelwagen --}}
                                     <form action="{{ route('cart.add', $product->id) }}" method="POST" class="flex-1">
                                         @csrf
                                         <button type="submit"
@@ -111,7 +103,33 @@
                                         </button>
                                     </form>
 
-                                    {{-- Admin Acties --}}
+                                    @auth
+                                        <form action="{{ route('wishlist.toggle', $product) }}" method="POST" class="flex-none">
+                                            @csrf
+                                            @if(auth()->user()->hasInWishlist($product))
+                                                <button
+                                                    type="submit"
+                                                    class="w-full sm:w-auto bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-md font-semibold transition flex items-center justify-center"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 mr-2">
+                                                        <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.5 3c1.76 0 3.31.81 4.25 2.09C12.69 3.81 14.24 3 16.5 3 19.285 3 21.75 5.322 21.75 8.25c0 3.926-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                                                    </svg>
+                                                    Op verlanglijstje
+                                                </button>
+                                            @else
+                                                <button
+                                                    type="submit"
+                                                    class="w-full sm:w-auto bg-gray-200 hover:bg-pink-500 hover:text-white text-gray-700 px-6 py-3 rounded-md font-semibold transition flex items-center justify-center"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                                                    </svg>
+                                                    Verlanglijstje
+                                                </button>
+                                            @endif
+                                        </form>
+                                    @endauth
+
                                     @auth
                                         @if(auth()->user()->is_admin)
                                             <a href="{{ route('admin.products.edit', $product) }}" class="flex-none bg-yellow-100 text-yellow-700 px-6 py-3 rounded-md font-semibold hover:bg-yellow-200 transition text-center border border-yellow-300 flex items-center justify-center">
@@ -140,12 +158,10 @@
                 </div>
             </div>
 
-            {{-- SECTIE: REVIEWS EN BEOORDELINGEN --}}
             <div class="mt-12 bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <h3 class="text-2xl font-bold text-gray-900 mb-6">Klantbeoordelingen</h3>
 
-                    {{-- Deel 1: Score Samenvatting --}}
                     <div class="flex items-center mb-10 bg-gray-50 p-4 rounded-lg inline-block border border-gray-100">
                         <div class="flex items-center">
                             @php $avgRating = round($product->averageRating()); @endphp
@@ -164,10 +180,8 @@
 
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
-                        {{-- Deel 2: Het Review Formulier (Linkerkant - 5 kolommen) --}}
                         <div class="lg:col-span-5">
                             @auth
-                                {{-- Check: Heeft deze user al een review geschreven? --}}
                                 @if($product->reviews->where('user_id', auth()->id())->count() > 0)
                                     <div class="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
                                         <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
@@ -185,11 +199,9 @@
                                         <form action="{{ route('reviews.store', $product) }}" method="POST">
                                             @csrf
 
-                                            {{-- Rating Selectie --}}
                                             <div class="mb-5">
                                                 <label class="block text-sm font-medium text-gray-700 mb-2">Uw waardering</label>
                                                 <div class="flex flex-row-reverse justify-end gap-1 group">
-                                                    {{-- Slimme CSS truck: flex-row-reverse zodat we hover effecten kunnen doen --}}
                                                     @for($i = 5; $i >= 1; $i--)
                                                         <input type="radio" id="star{{$i}}" name="rating" value="{{ $i }}" class="peer hidden" required />
                                                         <label for="star{{$i}}" class="cursor-pointer text-gray-300 peer-checked:text-yellow-400 hover:text-yellow-400 peer-hover:text-yellow-400 transition-colors">
@@ -200,7 +212,6 @@
                                                 @error('rating') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                             </div>
 
-                                            {{-- Commentaar Veld --}}
                                             <div class="mb-5">
                                                 <label for="comment" class="block text-sm font-medium text-gray-700 mb-2">Uw ervaring (optioneel)</label>
                                                 <textarea name="comment" id="comment" rows="4"
@@ -216,7 +227,6 @@
                                     </div>
                                 @endif
                             @else
-                                {{-- Niet ingelogd melding --}}
                                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
                                     <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
@@ -232,7 +242,6 @@
                             @endauth
                         </div>
 
-                        {{-- Deel 3: Lijst met Reviews (Rechterkant - 7 kolommen) --}}
                         <div class="lg:col-span-7">
                             @if($product->reviews->count() > 0)
                                 <div class="space-y-6">
@@ -240,7 +249,6 @@
                                         <div class="bg-white p-6 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
                                             <div class="flex justify-between items-start">
                                                 <div class="flex items-center">
-                                                    {{-- Avatar Placeholder (Initialen) --}}
                                                     <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm border border-indigo-200">
                                                         {{ substr($review->user->name, 0, 1) }}
                                                     </div>
@@ -251,12 +259,10 @@
                                                                 <span class="ml-2 text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full border border-gray-200">Jij</span>
                                                             @endif
                                                         </p>
-                                                        {{-- Gebruik de timeAgo methode uit je model --}}
                                                         <p class="text-xs text-gray-500">{{ $review->timeAgo() }}</p>
                                                     </div>
                                                 </div>
 
-                                                {{-- Sterren weergave bij review --}}
                                                 <div class="flex text-yellow-400">
                                                     @for ($i = 1; $i <= 5; $i++)
                                                         <svg class="w-4 h-4 {{ $i <= $review->rating ? 'fill-current' : 'text-gray-200' }}" viewBox="0 0 20 20">
@@ -272,7 +278,6 @@
                                                 </div>
                                             @endif
 
-                                            {{-- Verwijderknop: Alleen zichtbaar voor admin of de auteur --}}
                                             @auth
                                                 @if(auth()->user()->is_admin || auth()->id() === $review->user_id)
                                                     <div class="mt-3 flex justify-end">
@@ -306,7 +311,6 @@
                 </div>
             </div>
 
-            {{-- Gerelateerde Producten Sectie --}}
             @if(isset($relatedProducts) && $relatedProducts->count() > 0)
                 <div class="mt-12">
                     <h3 class="text-xl font-bold text-gray-900 mb-6">Andere klanten bekeken ook</h3>

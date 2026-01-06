@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-guest-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center bg-[#FDFBF7] py-4">
             <h2 class="font-serif text-3xl text-[#3E2C22] leading-tight tracking-wide">
@@ -132,4 +132,4 @@
 
         </div>
     </div>
-</x-app-layout>
+</x-guest-layout>
