@@ -28,6 +28,12 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        //Is de gebruiker een admin? (Gebruikt de functie uit jouw User model)
+        if ($request->user()->isAdmin()) {
+            return redirect()->intended(route('admin.dashboard', absolute: false));
+        }
+
+        //Zo niet stuur naar het standaard klant dashboard
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

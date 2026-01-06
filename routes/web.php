@@ -13,15 +13,18 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\ProfileMessageController;
+use App\Http\Controllers\DashboardController ;
+use App\Http\Controllers\Admin\AdminDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// user dashboard
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -62,6 +65,9 @@ Route::post('/contact', [ContactController::class, 'submit'])->name('contact.sub
 
 // Alles in deze groep kan enkel gebeuren wanneer je ingelogd bent als admin(is_admin = true)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+
+    // admin dashboard
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     // Lijst en Aanmaken
     Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
@@ -139,6 +145,5 @@ Route::post('/notifications/mark-as-read', function () {
     return back();
 })->name('notifications.markRead');
 require __DIR__.'/auth.php';
-
 
 
