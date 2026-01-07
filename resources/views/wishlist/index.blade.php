@@ -157,11 +157,8 @@
                     <p class="text-neutral-500 font-light mb-8 max-w-sm mx-auto">
                         Voeg producten toe aan je verlanglijstje om ze later terug te vinden.
                     </p>
-                    <a
-                        href="{{ route('products.index') }}"
-                        class="inline-block bg-neutral-900 hover:bg-neutral-700 text-white text-xs uppercase tracking-widest font-medium px-8 py-3 rounded-full transition duration-300"
-                    >
-                        Bekijk producten
+                    <a href="{{ route('products.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-[#2A1E17] focus:outline-none transition ease-in-out duration-150">
+                        Bekijk Producten
                     </a>
                 </div>
             @endif

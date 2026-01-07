@@ -8,7 +8,6 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            {{-- Meldingen --}}
             @if(session('success'))
                 <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
                     {{ session('success') }}
@@ -27,7 +26,6 @@
                     @if(count($cart) > 0)
                         <div class="flex flex-col lg:flex-row gap-8">
 
-                            {{-- Linkerkant: Productenlijst --}}
                             <div class="flex-1 overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
@@ -78,7 +76,7 @@
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="text-red-600 hover:text-red-900 font-bold">
-                                                        &times; Verwijder
+                                                        Verwijder
                                                     </button>
                                                 </form>
                                             </td>
@@ -88,9 +86,7 @@
                                 </table>
                             </div>
 
-                            {{-- Rechterkant: Totaal en Afrekenen --}}
                             <div class="w-full lg:w-1/3">
-                                {{-- 'relative z-10' zorgt dat dit blok altijd bovenop ligt --}}
                                 <div class="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-100 relative z-10">
                                     <h3 class="text-lg font-medium text-gray-900 mb-4">Overzicht</h3>
 
@@ -108,7 +104,6 @@
                                         <span class="text-xl font-bold text-indigo-600">€ {{ number_format($total, 2, ',', '.') }}</span>
                                     </div>
 
-                                    {{-- De knop die nu correct verwijst --}}
                                     <a href="{{ route('checkout.index') }}" class="block w-full bg-indigo-600 text-white text-center font-bold py-3 rounded-md hover:bg-indigo-700 transition shadow-md">
                                         Afrekenen
                                     </a>
@@ -121,7 +116,6 @@
 
                         </div>
                     @else
-                        {{-- Lege winkelwagen weergave --}}
                         <div class="text-center py-16">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-12 w-12 text-gray-400">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
@@ -129,7 +123,7 @@
                             <h3 class="mt-2 text-lg font-medium text-gray-900">Je winkelwagen is leeg</h3>
                             <p class="mt-1 text-gray-500">Je hebt nog geen producten toegevoegd.</p>
                             <div class="mt-6">
-                                <a href="{{ route('products.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
+                                <a href="{{ route('products.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none">
                                     Bekijk Producten
                                 </a>
                             </div>

@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
  * Handles product catalog and admin CRUD
  *
  */
-class ProductController extends Controller
+class ProductController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
@@ -31,23 +31,32 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::with('category')->inStock();
+        // Start de query met de categorie-relatie erbij
+        $query = Product::with('category');
 
-        // Filter by category
-        if ($request->has('category') && $request->category != '') {
+        // Categorie Filter
+        if ($request->filled('category')) {
             $query->where('category_id', $request->category);
         }
 
-        // Search functionality
-        if ($request->has('search') && $request->search != '') {
-            $query->search($request->search);
+        // Zoekfunctie
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+
+            // Zoek in naam of beschrijving
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
         }
 
-        // Get products with pagination
-        $products = $query->latest()->paginate(12);
+        // Producten ophalen met paginering
+        $products = $query->latest()
+            ->paginate(12)
+            ->withQueryString();
 
-        // Get all categories for filter dropdown
-        $categories = Category::withProducts()->ordered()->get();
+        // Categorieën ophalen voor de dropdown
+        $categories = Category::orderBy('name')->get();
 
         return view('products.index', compact('products', 'categories'));
     }
@@ -63,7 +72,7 @@ class ProductController extends Controller
         // Related products (same category)
         $relatedProducts = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
-            ->inStock()
+            ->inStock() // Zorg dat deze scope bestaat in je Product model, anders weghalen
             ->limit(4)
             ->get();
 
@@ -75,7 +84,8 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $categories = Category::ordered()->get();
+        // Aangepast naar orderBy('name') voor veiligheid
+        $categories = Category::orderBy('name')->get();
         return view('admin.products.create', compact('categories'));
     }
 
@@ -136,7 +146,8 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $categories = Category::ordered()->get();
+        // Aangepast naar orderBy('name') voor veiligheid
+        $categories = Category::orderBy('name')->get();
         return view('admin.products.edit', compact('product', 'categories'));
     }
 

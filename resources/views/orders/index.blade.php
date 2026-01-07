@@ -1,51 +1,50 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Mijn Bestellingen
+            {{ __('Mijn Bestellingen') }}
         </h2>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-12 bg-[#FDFBF7] min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+            <div class="bg-white overflow-hidden shadow-sm rounded-2xl border border-[#EAE5DE]">
+                <div class="p-8 text-gray-900">
 
                     @if($orders->count() > 0)
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                            <table class="min-w-full divide-y divide-[#F5F0EB]">
+                                <thead>
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Nr.</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Totaal</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actie</th>
+                                    <th class="px-6 py-4 text-left text-[10px] font-bold text-[#8C7B70] uppercase tracking-widest">Order Nr.</th>
+                                    <th class="px-6 py-4 text-left text-[10px] font-bold text-[#8C7B70] uppercase tracking-widest">Datum</th>
+                                    <th class="px-6 py-4 text-left text-[10px] font-bold text-[#8C7B70] uppercase tracking-widest">Status</th>
+                                    <th class="px-6 py-4 text-left text-[10px] font-bold text-[#8C7B70] uppercase tracking-widest">Totaal</th>
+                                    <th class="px-6 py-4 text-left text-[10px] font-bold text-[#8C7B70] uppercase tracking-widest">Items</th>
+                                    <th class="px-6 py-4 text-right text-[10px] font-bold text-[#8C7B70] uppercase tracking-widest">Actie</th>
                                 </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
+                                <tbody class="bg-white divide-y divide-[#F5F0EB]">
                                 @foreach($orders as $order)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                                    <tr class="hover:bg-[#FDFBF7] transition duration-150">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-[#3E2C22]">
                                             {{ $order->order_number }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#8C7B70]">
                                             {{ $order->created_at->format('d-m-Y H:i') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            {{-- Hier gebruiken we jouw statusColor() functie --}}
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $order->statusColor() }}">
-                                                    {{ ucfirst($order->status) }}
-                                                </span>
+                                            <span class="px-3 py-1 inline-flex text-[10px] leading-5 font-bold rounded-full uppercase tracking-wider bg-[#FDFBF7] text-[#8C7B70] border border-[#EAE5DE]">
+                                                {{ ucfirst($order->status) }}
+                                            </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#3E2C22] font-bold">
                                             {{ $order->formattedPrice() }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#8C7B70]">
                                             {{ $order->totalItems() }} stuks
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a href="{{ route('orders.show', $order) }}" class="text-indigo-600 hover:text-indigo-900">
+                                            <a href="{{ route('orders.show', $order) }}" class="text-[#5D4037] hover:text-[#3E2C22] font-bold transition underline uppercase text-[10px] tracking-widest">
                                                 Bekijken
                                             </a>
                                         </td>
@@ -55,13 +54,13 @@
                             </table>
                         </div>
 
-                        <div class="mt-4">
+                        <div class="mt-8">
                             {{ $orders->links() }}
                         </div>
                     @else
-                        <div class="text-center py-10">
-                            <h3 class="text-lg font-medium text-gray-900">Je hebt nog geen bestellingen geplaatst.</h3>
-                            <a href="{{ route('products.index') }}" class="mt-4 inline-block text-indigo-600 hover:underline">
+                        <div class="text-center py-12">
+                            <h3 class="text-lg font-semibold text-[#3E2C22] mb-6">Je hebt nog geen bestellingen geplaatst.</h3>
+                            <a href="{{ route('products.index') }}" class="inline-block bg-[#2A1E17] hover:bg-[#1A120E] text-white text-[10px] uppercase tracking-[0.2em] font-bold px-10 py-4 rounded-full transition shadow-md">
                                 Ga naar de winkel
                             </a>
                         </div>
