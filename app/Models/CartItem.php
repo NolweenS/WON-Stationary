@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use MongoDB\Driver\Session;
+use Illuminate\Support\Facades\Session;
 
 class CartItem extends Model
 {

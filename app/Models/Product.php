@@ -74,11 +74,17 @@ class Product extends Model
 
     public function imageUrl(): string
     {
-        if ($this->image) {
-            return asset('storage/' . $this->image);
+        if (!$this->image) {
+            return asset('images/no-product-image.png');
         }
 
-        return asset('images/no-product-image.png');
+        //  staat het direct in de public map
+        if (str_starts_with($this->image, 'images/')) {
+            return asset($this->image);
+        }
+
+        // Alleen als het GEEN geseede afbeelding is gebruiken we de storage map
+        return asset('storage/' . $this->image);
     }
     public function formattedPrice(): string
     {

@@ -127,7 +127,9 @@ class ProductController extends Controller implements HasMiddleware
 
         // Upload afbeelding
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $imageName = time().'.'.$request->image->extension();
+            $request->image->move(public_path('images/products'), $imageName);
+            $validated['image'] = 'images/products/' . $imageName;
         }
 
         // Set is_featured
@@ -188,7 +190,9 @@ class ProductController extends Controller implements HasMiddleware
                 Storage::disk('public')->delete($product->image);
             }
 
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $imageName = time().'.'.$request->image->extension();
+            $request->image->move(public_path('images/products'), $imageName);
+            $validated['image'] = 'images/products/' . $imageName;
         }
 
         // Set is_featured

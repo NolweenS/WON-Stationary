@@ -129,4 +129,9 @@ class User extends Authenticatable
         return $this->favorites
             ->contains($product);
     }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class)->latest();
+    }
 }

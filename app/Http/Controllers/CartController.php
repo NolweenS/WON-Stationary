@@ -3,92 +3,92 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\CartItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Http\RedirectResponse;
 
 class CartController extends Controller
 {
-    // Toon de winkelwagen
+    /**
+     * Toon de winkelwagen.
+     */
     public function index()
     {
-        $cart = session()->get('cart', []);
-        $total = 0;
 
-        foreach($cart as $details) {
-            $total += $details['price'] * $details['quantity'];
-        }
+        $cartItems = CartItem::getCurrentCart();
+        $total = CartItem::cartTotal();
 
-        return view('cart.index', compact('cart', 'total'));
+        return view('cart.index', compact('cartItems', 'total'));
     }
 
-    // Product toevoegen aan winkelwagen
-    public function add(Request $request, $id)
+    /**
+     * Product toevoegen aan winkelwagen.
+     */
+    public function add(int $id): RedirectResponse
     {
         $product = Product::findOrFail($id);
-        $cart = session()->get('cart', []);
 
-        // Validatie: check voorraad
-        if($product->stock <= 0) {
-            return redirect()->back()->with('error', 'Dit product is niet meer op voorraad.');
-        }
+        $userId = auth()->id();
+        $sessionId = Session::getId();
 
-        // Als product al in cart zit, aantal verhogen
-        if(isset($cart[$id])) {
-            // Check of er nog genoeg voorraad is voor de extra toevoeging
-            if($cart[$id]['quantity'] + 1 > $product->stock) {
-                return redirect()->back()->with('error', 'Niet genoeg voorraad beschikbaar.');
+        // Zoek of het item al bestaat voor deze bezoeker
+        $cartItem = CartItem::where('product_id', $id)
+            ->where(function($query) use ($userId, $sessionId) {
+                if ($userId) {
+                    $query->where('user_id', $userId);
+                } else {
+                    $query->where('session_id', $sessionId);
+                }
+            })->first();
+
+        if ($cartItem) {
+            // Check voorraad
+            if ($cartItem->quantity + 1 > $product->stock) {
+                return redirect()->back()->with('error', 'Niet genoeg voorraad.');
             }
-            $cart[$id]['quantity']++;
+            $cartItem->increment('quantity');
         } else {
-            // Nieuw product toevoegen
-            $cart[$id] = [
-                "name" => $product->name,
-                "quantity" => 1,
-                "price" => $product->price,
-                "image" => $product->image,
-                "stock" => $product->stock
-            ];
+            // Maak nieuw item aan in de database
+            CartItem::create([
+                'user_id' => $userId,
+                'session_id' => $userId ? null : $sessionId,
+                'product_id' => $id,
+                'quantity' => 1
+            ]);
         }
 
-        session()->put('cart', $cart);
-
-        return redirect()->back()->with('success', 'Product toegevoegd aan winkelwagen!');
+        return redirect()->back()->with('success', 'Toegevoegd aan je mandje!');
     }
 
-    // Aantal aanpassen
-    public function update(Request $request, $id)
+    /**
+     * Aantal aanpassen in de winkelwagen.
+     */
+    public function update(Request $request, int $id): RedirectResponse
     {
-        $cart = session()->get('cart');
+        $cartItem = CartItem::findOrFail($id);
+        $newQuantity = (int) $request->input('quantity');
 
-        if(isset($cart[$id])) {
-            $quantity = $request->input('quantity');
-
-            // Simpele voorraad check op basis van sessie data
-            if($quantity > $cart[$id]['stock']) {
-                session()->flash('error', 'Niet genoeg voorraad beschikbaar.');
-            } else if ($quantity > 0) {
-                $cart[$id]['quantity'] = $quantity;
-                session()->put('cart', $cart);
-                session()->flash('success', 'Winkelwagen bijgewerkt.');
-            } else {
-                // Als aantal 0 of minder is, verwijder item
-                unset($cart[$id]);
-                session()->put('cart', $cart);
-            }
+        // Voorraad check
+        if ($newQuantity > $cartItem->product->stock) {
+            return redirect()->back()->with('error', 'Niet genoeg voorraad.');
         }
 
-        return redirect()->back();
+        if ($newQuantity <= 0) {
+            $cartItem->delete();
+        } else {
+            $cartItem->update(['quantity' => $newQuantity]);
+        }
+
+        return redirect()->back()->with('success', 'Winkelwagen bijgewerkt.');
     }
 
-    // Item verwijderen
-    public function remove($id)
+    /**
+     * Item volledig verwijderen.
+     */
+    public function remove(int $id): RedirectResponse
     {
-        $cart = session()->get('cart');
-
-        if(isset($cart[$id])) {
-            unset($cart[$id]);
-            session()->put('cart', $cart);
-        }
-
-        return redirect()->back()->with('success', 'Product verwijderd uit winkelwagen.');
+        CartItem::findOrFail($id)->delete();
+        return redirect()->back()->with('success', 'Item verwijderd.');
     }
 }

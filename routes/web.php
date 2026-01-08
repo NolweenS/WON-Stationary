@@ -21,7 +21,6 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-// user dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
@@ -38,11 +37,9 @@ Route::resource('news', NewsController::class)->parameters([
     'news' => 'news:slug'
 ]);
 
-// FAQ Routes
 Route::get('/faq', [FAQController::class, 'index'])->name('faq.index');
 
 Route::prefix('admin/faq')->middleware(['auth'])->group(function () {
-    // Categories
     Route::get('/categories', [FAQController::class, 'categoriesIndex'])->name('faq.admin.categories.index');
     Route::get('/categories/create', [FAQController::class, 'categoriesCreate'])->name('faq.admin.categories.create');
     Route::post('/categories', [FAQController::class, 'categoriesStore'])->name('faq.admin.categories.store');
@@ -50,7 +47,6 @@ Route::prefix('admin/faq')->middleware(['auth'])->group(function () {
     Route::put('/categories/{category}', [FAQController::class, 'categoriesUpdate'])->name('faq.admin.categories.update');
     Route::delete('/categories/{category}', [FAQController::class, 'categoriesDestroy'])->name('faq.admin.categories.destroy');
 
-    // Questions
     Route::get('/questions', [FAQController::class, 'questionsIndex'])->name('faq.admin.questions.index');
     Route::get('/questions/create', [FAQController::class, 'questionsCreate'])->name('faq.admin.questions.create');
     Route::post('/questions', [FAQController::class, 'questionsStore'])->name('faq.admin.questions.store');
@@ -59,62 +55,42 @@ Route::prefix('admin/faq')->middleware(['auth'])->group(function () {
     Route::delete('/questions/{question}', [FAQController::class, 'questionsDestroy'])->name('faq.admin.questions.destroy');
 });
 
-//Contact Routes
 Route::get('/contact', [ContactController::class, 'show'])->name('contact.show');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
-// Alles in deze groep kan enkel gebeuren wanneer je ingelogd bent als admin(is_admin = true)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-
-    // admin dashboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-
-    // Lijst en Aanmaken
     Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserManagementController::class, 'create'])->name('users.create');
     Route::post('/users', [UserManagementController::class, 'store'])->name('users.store');
-
-    // Acties (Promote,Demote,Delete)
     Route::patch('/users/{user}/promote', [UserManagementController::class, 'promote'])->name('users.promote');
     Route::patch('/users/{user}/demote', [UserManagementController::class, 'demote'])->name('users.demote');
     Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
 });
 
-// Public Product routes
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
 
-// Admin Product routes
 Route::prefix('admin')
     ->middleware(['auth', 'admin'])
     ->name('admin.')
     ->group(function () {
-
-        // Products
         Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
         Route::post('/products', [ProductController::class, 'store'])->name('products.store');
         Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
         Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
         Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
-
-        // Categories
         Route::resource('categories', CategoryController::class)->except(['show']);
     });
 
-// Winkelwagen Routes
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 Route::patch('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
-// Checkout en Order Routes (alleen voor ingelogde gebruikers)
 Route::middleware('auth')->group(function () {
-
-    // Checkout Routes
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
-
-    // User Order Routes
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
@@ -122,28 +98,21 @@ Route::middleware('auth')->group(function () {
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 });
 
-// Wishlist routes (authenticated users only)
 Route::middleware('auth')->group(function () {
-    Route::get('/wishlist', [WishlistController::class, 'index'])
-        ->name('wishlist.index');
-    Route::post('/wishlist/{product}', [WishlistController::class, 'store'])
-        ->name('wishlist.store');
-    Route::delete('/wishlist/{product}', [WishlistController::class, 'destroy'])
-        ->name('wishlist.destroy');
-    Route::post('/wishlist/{product}/toggle', [WishlistController::class, 'toggle'])
-        ->name('wishlist.toggle');
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/{product}', [WishlistController::class, 'store'])->name('wishlist.store');
+    Route::delete('/wishlist/{product}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
+    Route::post('/wishlist/{product}/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 });
 
-// Profile Message Routes
-Route::post('/profile/{user}/message', [App\Http\Controllers\ProfileMessageController::class, 'store'])->name('profile.message.store');
-Route::delete('/profile/message/{message}', [App\Http\Controllers\ProfileMessageController::class, 'destroy'])->name('profile.message.destroy');
+Route::post('/profile/{user}/message', [ProfileMessageController::class, 'store'])->name('profile.message.store');
+Route::delete('/profile/message/{message}', [ProfileMessageController::class, 'destroy'])->name('profile.message.destroy');
 
-
-//notification route
 Route::post('/notifications/mark-as-read', function () {
     auth()->user()->unreadNotifications->markAsRead();
     return back();
-})->name('notifications.markRead');
+})->middleware('auth')->name('notifications.markRead');
+
 require __DIR__.'/auth.php';
 
 

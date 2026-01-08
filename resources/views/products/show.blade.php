@@ -1,5 +1,4 @@
 <x-guest-layout>
-    {{-- Breadcrumbs (Pad) --}}
     <div class="bg-nude border-b border-border">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <nav class="flex text-xs font-medium text-secondary uppercase tracking-wider">
@@ -15,18 +14,16 @@
     <div class="py-12 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-            {{-- Meldingen --}}
             @if(session('success'))
                 <x-alert type="success" :message="session('success')" />
             @endif
 
             <div class="lg:grid lg:grid-cols-2 lg:gap-x-12 lg:items-start">
 
-                {{-- Linkerkant: Afbeelding --}}
                 <div class="relative group">
                     <div class="aspect-w-1 aspect-h-1 rounded-lg overflow-hidden border border-border bg-nude">
                         @if($product->image)
-                            <img src="{{ Storage::url($product->image) }}"
+                            <img src="{{ $product->imageUrl() }}"
                                  alt="{{ $product->name }}"
                                  class="w-full h-full object-center object-cover">
                         @else
@@ -43,13 +40,10 @@
                     @endif
                 </div>
 
-                {{-- Rechterkant: Info --}}
                 <div class="mt-10 px-2 sm:px-0 sm:mt-16 lg:mt-0">
-                    {{-- Categorie & Naam --}}
                     <h2 class="text-sm tracking-widest text-secondary uppercase mb-2">{{ $product->category->name ?? 'Algemeen' }}</h2>
                     <h1 class="text-4xl font-serif text-primary tracking-tight mb-4">{{ $product->name }}</h1>
 
-                    {{-- Rating --}}
                     <div class="flex items-center mb-4">
                         <x-star-rating :rating="round($product->averageRating())" />
                         <span class="ml-2 text-xs text-secondary uppercase tracking-wide">
@@ -57,7 +51,6 @@
                         </span>
                     </div>
 
-                    {{-- Prijs & Voorraad --}}
                     <div class="mt-3 flex items-end justify-between border-b border-border pb-6">
                         <p class="text-3xl text-primary font-serif">{{ $product->formattedPrice() }}</p>
 
@@ -79,7 +72,6 @@
                         @endif
                     </div>
 
-                    {{-- Beschrijving --}}
                     <div class="mt-6">
                         <h3 class="text-sm font-medium text-primary uppercase tracking-wider mb-2">Omschrijving</h3>
                         <div class="text-secondary font-light leading-relaxed text-sm">
@@ -87,7 +79,6 @@
                         </div>
                     </div>
 
-                    {{-- Acties: Toevoegen aan winkelwagen --}}
                     <div class="mt-10">
                         @if($product->stock > 0)
                             <form action="{{ route('cart.add', $product->id) }}" method="POST">
@@ -97,7 +88,6 @@
                                         In Winkelwagen
                                     </button>
 
-                                    {{-- Wishlist (Alleen ingelogd) --}}
                                     @auth
                                         <button onclick="toggleWishlist(event, this)" data-url="{{ route('wishlist.toggle', $product) }}" class="p-4 rounded-full border border-border text-secondary hover:text-primary hover:border-primary transition group">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 icon-outline {{ auth()->user()->hasInWishlist($product) ? 'hidden' : '' }}">
@@ -117,7 +107,6 @@
                         @endif
                     </div>
 
-                    {{-- Admin Knoppen --}}
                     @auth
                         @if(auth()->user()->is_admin)
                             <div class="mt-6 flex gap-4 pt-6 border-t border-border">
@@ -132,12 +121,10 @@
                 </div>
             </div>
 
-            {{-- Reviews Sectie --}}
             <div class="mt-24 border-t border-border pt-16">
                 <h2 class="text-2xl font-serif text-primary mb-8">Klantbeoordelingen</h2>
 
                 <div class="lg:grid lg:grid-cols-12 lg:gap-12">
-                    {{-- Review Formulier (Links) --}}
                     <div class="lg:col-span-4 mb-12 lg:mb-0">
                         @auth
                             <div class="bg-beige p-6 rounded-lg border border-border">
@@ -170,7 +157,6 @@
                         @endauth
                     </div>
 
-                    {{-- Review Lijst (Rechts) --}}
                     <div class="lg:col-span-8 space-y-6">
                         @forelse($product->reviews as $review)
                             <x-review-card :review="$review" />
@@ -181,7 +167,6 @@
                 </div>
             </div>
 
-            {{-- Related Products --}}
             @if(isset($relatedProducts) && $relatedProducts->count() > 0)
                 <div class="mt-24">
                     <h3 class="text-2xl font-serif text-primary mb-8 text-center">Ook interessant</h3>
@@ -196,7 +181,6 @@
         </div>
     </div>
 
-    {{-- Script voor Wishlist (Alleen laden als ingelogd) --}}
     @auth
         <script>
             function toggleWishlist(event, button) {
