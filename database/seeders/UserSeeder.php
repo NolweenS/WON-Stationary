@@ -63,8 +63,7 @@ class UserSeeder extends Seeder
                 'username' => $data['username'],
                 'birthday' => $data['birthday'],
                 'about_me' => $data['about_me'],
-                // De UI-Avatar URL die automatisch initialen maakt
-                'profile_photo' => 'https://ui-avatars.com/api/?background=f5ebe0&color=d5bdaf&name=' . urlencode($data['name']),
+                'profile_photo' => null,
             ]);
         }
     }

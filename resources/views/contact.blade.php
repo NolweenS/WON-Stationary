@@ -14,10 +14,7 @@
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
 
             @if(session('success'))
-                <div class="mb-8 bg-[#EAE5DE] border-l-2 border-[#3E2C22] text-[#3E2C22] px-6 py-4 rounded-r-lg shadow-sm">
-                    <p class="font-bold font-serif text-lg mb-1">Bericht verzonden!</p>
-                    <p class="text-sm">{{ session('success') }}</p>
-                </div>
+                <x-alert type="success" :message="session('success')" class="mb-8" />
             @endif
 
             <div class="bg-white border border-[#EAE5DE] shadow-sm rounded-lg overflow-hidden p-10 md:p-12">

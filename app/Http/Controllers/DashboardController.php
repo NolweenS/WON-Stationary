@@ -15,6 +15,11 @@ class DashboardController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
+        // Als de gebruiker een admin is, stuur ze door naar het admin dashboard
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         //Recente bestellingen
         $recentOrders = $user->orders()
             ->latest() // Nieuwste eerst

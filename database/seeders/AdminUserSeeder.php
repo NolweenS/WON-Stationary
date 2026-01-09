@@ -24,13 +24,13 @@ class AdminUserSeeder extends Seeder
         ]);
 
         // Profiel aanmaken
+        // We laten profile_photo leeg (null), zodat het Profile model de fallback URL genereert
         Profile::create([
             'user_id' => $admin->id,
             'username' => 'Administrator',
             'birthday' => '1990-01-01',
             'about_me' => 'Hoofdbeheerder van WON-Stationary.',
-            // UI-Avatar link
-            'profile_photo' => 'https://ui-avatars.com/api/?background=f5ebe0&color=d5bdaf&name=Admin+WON',
+            'profile_photo' => null,
         ]);
     }
 }

@@ -14,18 +14,15 @@ class CheckoutController extends Controller
     // Toon checkout pagina
     public function index()
     {
-        $cart = session()->get('cart', []);
+        $cartItems = \App\Models\CartItem::getCurrentCart() ?? collect([]);
 
-        if(count($cart) < 1) {
+        if($cartItems->count() < 1) {
             return redirect()->route('products.index')->with('error', 'Winkelwagen is leeg.');
         }
 
-        $total = 0;
-        foreach($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
-        }
+        $total = \App\Models\CartItem::cartTotal() ?? 0;
 
-        return view('checkout.index', compact('cart', 'total'));
+        return view('checkout.index', compact('cartItems', 'total'));
     }
 
     // Verwerk de bestelling
@@ -38,17 +35,14 @@ class CheckoutController extends Controller
             'shipping_postal' => 'required|string|max:20',
         ]);
 
-        $cart = session()->get('cart', []);
+        $cartItems = \App\Models\CartItem::getCurrentCart() ?? collect([]);
 
-        if(count($cart) < 1) {
+        if($cartItems->count() < 1) {
             return redirect()->route('products.index');
         }
 
         // Totaal berekenen
-        $total = 0;
-        foreach($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
-        }
+        $total = \App\Models\CartItem::cartTotal() ?? 0;
 
         try {
             DB::beginTransaction();
@@ -65,29 +59,28 @@ class CheckoutController extends Controller
             ]);
 
             //Order Items aanmaken
-            foreach($cart as $id => $item) {
-                $product = Product::find($id);
+            foreach($cartItems as $cartItem) {
+                $product = $cartItem->product;
 
-                if (!$product || $product->stock < $item['quantity']) {
-                    throw new \Exception("Product '{$item['name']}' is niet meer voldoende op voorraad.");
+                if (!$product || $product->stock < $cartItem->quantity) {
+                    throw new \Exception("Product '{$product->name}' is niet meer voldoende op voorraad.");
                 }
 
                 OrderItem::create([
                     'order_id' => $order->id,
-                    'product_id' => $id,
-                    'quantity' => $item['quantity'],
-                    'price' => $item['price'],
+                    'product_id' => $product->id,
+                    'quantity' => $cartItem->quantity,
+                    'price' => $product->price,
                 ]);
 
                 // Voorraad verminderen
-                $product->decrement('stock', $item['quantity']);
+                $product->decrement('stock', $cartItem->quantity);
             }
 
             DB::commit();
 
-            // Winkelwagen legen
-            session()->forget('cart');
-
+            // Winkelwagen legen (verwijder alle cart items voor deze gebruiker/sessie)
+            \App\Models\CartItem::clearCart();
 
             return redirect()->route('orders.index')->with('success', 'Bedankt! Je bestelling ' . $order->order_number . ' is geplaatst.');
 

@@ -9,9 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             @if(session('error'))
-                <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-                    {{ session('error') }}
-                </div>
+                <x-alert type="error" :message="session('error')" class="mb-6" />
             @endif
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -70,25 +68,21 @@
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Overzicht Bestelling</h3>
                     <div class="flow-root">
                         <ul role="list" class="-my-6 divide-y divide-gray-200">
-                            @foreach($cart as $item)
+                            @foreach($cartItems as $cartItem)
                                 <li class="flex py-6">
                                     <div class="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                        @if(isset($item['image']) && $item['image'])
-                                            <img src="{{ Storage::url($item['image']) }}" alt="{{ $item['name'] }}" class="h-full w-full object-cover object-center">
-                                        @else
-                                            <div class="h-full w-full bg-gray-200"></div>
-                                        @endif
+                                        <img src="{{ $cartItem->product->imageUrl() }}" alt="{{ $cartItem->product->name }}" class="h-full w-full object-cover object-center">
                                     </div>
 
                                     <div class="ml-4 flex flex-1 flex-col">
                                         <div>
                                             <div class="flex justify-between text-base font-medium text-gray-900">
-                                                <h3>{{ $item['name'] }}</h3>
-                                                <p class="ml-4">€ {{ number_format($item['price'] * $item['quantity'], 2, ',', '.') }}</p>
+                                                <h3>{{ $cartItem->product->name }}</h3>
+                                                <p class="ml-4">€ {{ number_format($cartItem->product->price * $cartItem->quantity, 2, ',', '.') }}</p>
                                             </div>
                                         </div>
                                         <div class="flex flex-1 items-end justify-between text-sm">
-                                            <p class="text-gray-500">Aantal: {{ $item['quantity'] }}</p>
+                                            <p class="text-gray-500">Aantal: {{ $cartItem->quantity }}</p>
                                         </div>
                                     </div>
                                 </li>

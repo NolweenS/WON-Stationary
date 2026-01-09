@@ -28,6 +28,14 @@ class Product extends Model
         'is_featured' => 'boolean',
     ];
 
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     //Product hoort bij een categorie
     public function category()
     {
@@ -78,12 +86,17 @@ class Product extends Model
             return asset('images/no-product-image.png');
         }
 
-        //  staat het direct in de public map
+        // Als het pad al begint met 'images/', gebruik het direct
         if (str_starts_with($this->image, 'images/')) {
             return asset($this->image);
         }
 
-        // Alleen als het GEEN geseede afbeelding is gebruiken we de storage map
+        // Als het alleen een bestandsnaam is (van seeder), gebruik placeholder map
+        if (!str_contains($this->image, '/')) {
+            return asset('images/placeholder/' . $this->image);
+        }
+
+        // Anders gebruik storage map
         return asset('storage/' . $this->image);
     }
     public function formattedPrice(): string

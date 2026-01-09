@@ -74,7 +74,9 @@ class ProfileController extends Controller
     public function deletePhoto()
     {
         $user = auth()->user();
-        $profile = $user->profile();
+        // FIX: $user->profile() returns the relationship builder (HasOne), not the model instance.
+        // We need to use the property $user->profile to get the model.
+        $profile = $user->profile;
 
         if($profile && $profile->profile_photo)
         {

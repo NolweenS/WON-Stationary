@@ -1,8 +1,19 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Mijn Bestellingen') }}
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                @if(Auth::user()->isAdmin())
+                    {{ __('Alle Bestellingen') }}
+                @else
+                    {{ __('Mijn Bestellingen') }}
+                @endif
+            </h2>
+            @if(Auth::user()->isAdmin())
+                <a href="{{ route('admin.dashboard') }}" class="text-sm text-[#8C7B70] hover:text-[#3E2C22] transition font-medium">
+                    &larr; Terug naar Dashboard
+                </a>
+            @endif
+        </div>
     </x-slot>
 
     <div class="py-12 bg-[#FDFBF7] min-h-screen">
@@ -16,6 +27,9 @@
                                 <thead>
                                 <tr>
                                     <th class="px-6 py-4 text-left text-[10px] font-bold text-[#8C7B70] uppercase tracking-widest">Order Nr.</th>
+                                    @if(Auth::user()->isAdmin())
+                                        <th class="px-6 py-4 text-left text-[10px] font-bold text-[#8C7B70] uppercase tracking-widest">Klant</th>
+                                    @endif
                                     <th class="px-6 py-4 text-left text-[10px] font-bold text-[#8C7B70] uppercase tracking-widest">Datum</th>
                                     <th class="px-6 py-4 text-left text-[10px] font-bold text-[#8C7B70] uppercase tracking-widest">Status</th>
                                     <th class="px-6 py-4 text-left text-[10px] font-bold text-[#8C7B70] uppercase tracking-widest">Totaal</th>
@@ -29,6 +43,12 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-[#3E2C22]">
                                             {{ $order->order_number }}
                                         </td>
+                                        @if(Auth::user()->isAdmin())
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[#3E2C22]">
+                                                {{ $order->user ? $order->user->name : 'Gast' }}
+                                                <div class="text-xs text-[#8C7B70]">{{ $order->user ? $order->user->email : '' }}</div>
+                                            </td>
+                                        @endif
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-[#8C7B70]">
                                             {{ $order->created_at->format('d-m-Y H:i') }}
                                         </td>
@@ -59,10 +79,18 @@
                         </div>
                     @else
                         <div class="text-center py-12">
-                            <h3 class="text-lg font-semibold text-[#3E2C22] mb-6">Je hebt nog geen bestellingen geplaatst.</h3>
-                            <a href="{{ route('products.index') }}" class="inline-block bg-[#2A1E17] hover:bg-[#1A120E] text-white text-[10px] uppercase tracking-[0.2em] font-bold px-10 py-4 rounded-full transition shadow-md">
-                                Ga naar de winkel
-                            </a>
+                            <h3 class="text-lg font-semibold text-[#3E2C22] mb-6">
+                                @if(Auth::user()->isAdmin())
+                                    Er zijn nog geen bestellingen gevonden.
+                                @else
+                                    Je hebt nog geen bestellingen geplaatst.
+                                @endif
+                            </h3>
+                            @if(!Auth::user()->isAdmin())
+                                <a href="{{ route('products.index') }}" class="inline-block bg-[#2A1E17] hover:bg-[#1A120E] text-white text-[10px] uppercase tracking-[0.2em] font-bold px-10 py-4 rounded-full transition shadow-md">
+                                    Ga naar de winkel
+                                </a>
+                            @endif
                         </div>
                     @endif
 

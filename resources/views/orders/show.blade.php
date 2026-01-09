@@ -4,9 +4,15 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Bestelling: {{ $order->order_number }}
             </h2>
-            <a href="{{ route('orders.index') }}" class="text-sm text-[#8C7B70] hover:text-[#3E2C22] transition font-medium">
-                &larr; Terug naar overzicht
-            </a>
+            @if(Auth::user()->isAdmin())
+                <a href="{{ route('admin.dashboard') }}" class="text-sm text-[#8C7B70] hover:text-[#3E2C22] transition font-medium">
+                    &larr; Terug naar Dashboard
+                </a>
+            @else
+                <a href="{{ route('orders.index') }}" class="text-sm text-[#8C7B70] hover:text-[#3E2C22] transition font-medium">
+                    &larr; Terug naar overzicht
+                </a>
+            @endif
         </div>
     </x-slot>
 
@@ -15,9 +21,7 @@
 
             {{-- Meldingen --}}
             @if(session('success'))
-                <div class="mb-6 bg-white border-l-4 border-[#5D4037] text-[#3E2C22] px-4 py-3 rounded-lg shadow-sm font-medium">
-                    {{ session('success') }}
-                </div>
+                <x-alert type="success" :message="session('success')" />
             @endif
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -32,8 +36,8 @@
                                 @foreach($order->items as $item)
                                     <li class="flex py-6">
                                         <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl border border-[#EAE5DE]">
-                                            @if($item->product && $item->product->image)
-                                                <img src="{{ Storage::url($item->product->image) }}" alt="{{ $item->product->name }}" class="h-full w-full object-cover object-center">
+                                            @if($item->product)
+                                                <img src="{{ $item->product->imageUrl() }}" alt="{{ $item->product->name }}" class="h-full w-full object-cover object-center">
                                             @else
                                                 <div class="h-full w-full bg-[#FDFBF7] flex items-center justify-center text-[10px] text-[#8C7B70] uppercase tracking-tighter">
                                                     Geen foto
@@ -76,7 +80,30 @@
                             <span>{{ $order->formattedPrice() }}</span>
                         </div>
 
-                        @if($order->canBeCancelled())
+                        {{-- Admin Status Update --}}
+                        @if(Auth::user()->isAdmin())
+                            <div class="mt-6 pt-6 border-t border-[#F5F0EB]">
+                                <h4 class="text-xs font-bold text-[#3E2C22] uppercase tracking-widest mb-3">Status Wijzigen</h4>
+                                <form action="{{ route('admin.orders.update-status', $order) }}" method="POST">
+                                    @csrf
+                                    @method('PATCH')
+                                    <div class="flex gap-2">
+                                        <select name="status" class="block w-full rounded-md border-[#EAE5DE] text-sm focus:border-[#3E2C22] focus:ring-[#3E2C22]">
+                                            <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                            <option value="paid" {{ $order->status == 'paid' ? 'selected' : '' }}>Betaald</option>
+                                            <option value="shipped" {{ $order->status == 'shipped' ? 'selected' : '' }}>Verzonden</option>
+                                            <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>Voltooid</option>
+                                            <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Geannuleerd</option>
+                                        </select>
+                                        <button type="submit" class="bg-[#3E2C22] text-white px-4 py-2 rounded-md text-xs uppercase font-bold hover:bg-[#5D4037] transition">
+                                            Update
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        @endif
+
+                        @if($order->canBeCancelled() && !Auth::user()->isAdmin())
                             <form action="{{ route('orders.cancel', $order) }}" method="POST" onsubmit="return confirm('Weet je zeker dat je deze bestelling wilt annuleren?');" class="mt-4">
                                 @csrf
                                 <button type="submit" class="w-full bg-white text-[#8C7B70] border border-[#EAE5DE] py-3 rounded-full hover:bg-[#FDFBF7] transition text-[10px] font-bold uppercase tracking-widest">
@@ -90,7 +117,7 @@
                         <h3 class="text-lg font-bold text-gray-900 mb-6 uppercase tracking-widest text-xs">Verzendadres</h3>
                         <p class="text-[#3E2C22] text-sm leading-relaxed font-medium">
                             <span class="text-[#8C7B70] font-normal uppercase text-[10px] block mb-1">Ontvanger</span>
-                            {{ $order->user->name }}<br>
+                            {{ $order->user ? $order->user->name : 'Gast' }}<br>
                             <span class="text-[#8C7B70] font-normal uppercase text-[10px] block mt-3 mb-1">Adres</span>
                             {{ $order->shipping_address }}<br>
                             {{ $order->shipping_postal }} {{ $order->shipping_city }}

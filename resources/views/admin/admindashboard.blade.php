@@ -17,6 +17,7 @@
                     <div class="mt-2 flex items-center">
                         <div class="text-3xl font-bold text-gray-900">{{ $totalUsers }}</div>
                     </div>
+                    <a href="{{ route('admin.users.index') }}" class="text-xs text-blue-600 hover:underline mt-2 inline-block">Beheer gebruikers &rarr;</a>
                 </div>
 
                 {{-- Card 2: Omzet --}}
@@ -33,6 +34,7 @@
                     <div class="mt-2 flex items-center">
                         <div class="text-3xl font-bold text-gray-900">{{ $openOrders }}</div>
                     </div>
+                    <a href="{{ route('orders.index') }}" class="text-xs text-blue-600 hover:underline mt-2 inline-block">Bekijk orders &rarr;</a>
                 </div>
 
             </div>

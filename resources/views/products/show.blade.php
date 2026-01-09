@@ -1,13 +1,13 @@
 <x-guest-layout>
     <div class="bg-nude border-b border-border">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <nav class="flex text-xs font-medium text-secondary uppercase tracking-wider">
-                <a href="{{ route('home') }}" class="hover:text-primary transition">Home</a>
-                <span class="mx-2">/</span>
-                <a href="{{ route('products.index') }}" class="hover:text-primary transition">Shop</a>
-                <span class="mx-2">/</span>
-                <span class="text-primary">{{ $product->name }}</span>
-            </nav>
+            <button onclick="window.history.back()"
+               class="inline-flex items-center text-xs font-semibold text-secondary uppercase tracking-widest hover:text-primary transition duration-150 ease-in-out">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Terug
+            </button>
         </div>
     </div>
 
@@ -18,16 +18,16 @@
                 <x-alert type="success" :message="session('success')" />
             @endif
 
-            <div class="lg:grid lg:grid-cols-2 lg:gap-x-12 lg:items-start">
+            <div class="max-w-4xl mx-auto">
 
-                <div class="relative group">
-                    <div class="aspect-w-1 aspect-h-1 rounded-lg overflow-hidden border border-border bg-nude">
+                <div class="relative group mb-8">
+                    <div class="rounded-lg overflow-hidden border border-border bg-nude max-w-2xl mx-auto">
                         @if($product->image)
                             <img src="{{ $product->imageUrl() }}"
                                  alt="{{ $product->name }}"
-                                 class="w-full h-full object-center object-cover">
+                                 class="w-full h-auto object-center object-cover">
                         @else
-                            <div class="w-full h-full flex items-center justify-center text-secondary opacity-50">
+                            <div class="w-full h-64 flex items-center justify-center text-secondary opacity-50">
                                 <span class="text-sm uppercase">Geen afbeelding</span>
                             </div>
                         @endif
@@ -40,7 +40,7 @@
                     @endif
                 </div>
 
-                <div class="mt-10 px-2 sm:px-0 sm:mt-16 lg:mt-0">
+                <div class="px-2 sm:px-0">
                     <h2 class="text-sm tracking-widest text-secondary uppercase mb-2">{{ $product->category->name ?? 'Algemeen' }}</h2>
                     <h1 class="text-4xl font-serif text-primary tracking-tight mb-4">{{ $product->name }}</h1>
 
@@ -109,11 +109,19 @@
 
                     @auth
                         @if(auth()->user()->is_admin)
-                            <div class="mt-6 flex gap-4 pt-6 border-t border-border">
-                                <a href="{{ route('admin.products.edit', $product) }}" class="text-xs uppercase tracking-widest font-bold text-primary hover:text-secondary">Bewerken</a>
-                                <form action="{{ route('admin.products.destroy', $product) }}" method="POST" onsubmit="return confirm('Zeker weten?');">
+                            <div class="mt-6 flex items-center space-x-3 pt-6 border-t border-border">
+                                <a href="{{ route('admin.products.edit', $product) }}" class="text-[#8C7B70] hover:text-[#3E2C22] transition" title="Bewerken">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                    </svg>
+                                </a>
+                                <form action="{{ route('admin.products.destroy', $product) }}" method="POST" onsubmit="return confirm('Weet je zeker dat je dit product wilt verwijderen?');" class="inline-flex">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="text-xs uppercase tracking-widest font-bold text-red-600 hover:text-red-800">Verwijderen</button>
+                                    <button type="submit" class="text-[#8C7B70] hover:text-red-700 transition" title="Verwijderen">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                        </svg>
+                                    </button>
                                 </form>
                             </div>
                         @endif
@@ -170,7 +178,7 @@
             @if(isset($relatedProducts) && $relatedProducts->count() > 0)
                 <div class="mt-24">
                     <h3 class="text-2xl font-serif text-primary mb-8 text-center">Ook interessant</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         @foreach($relatedProducts as $related)
                             <x-product-card :product="$related" />
                         @endforeach

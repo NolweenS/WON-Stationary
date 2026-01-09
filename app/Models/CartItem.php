@@ -118,4 +118,16 @@ class CartItem extends Model
     {
         return $this->product->stock;
     }
+
+    //Winkelwagen legen voor de huidige bezoeker
+    public static function clearCart(): void
+    {
+        if(auth()->check())
+        {
+            self::where('user_id', auth()->id())->delete();
+        }else
+        {
+            self::where('session_id', Session::getId())->delete();
+        }
+    }
 }

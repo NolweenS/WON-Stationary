@@ -6,9 +6,11 @@ use App\Models\FaqCategory;
 use App\Models\FaqQuestion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
 //Gaat functioneren voor de FAQ categorie en de vragen
-class FAQController extends Controller
+class FAQController extends Controller implements HasMiddleware
 {
     //amdin middelware toevoegen
     public static function middleware(): array

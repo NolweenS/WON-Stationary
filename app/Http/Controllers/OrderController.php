@@ -13,10 +13,15 @@ class OrderController extends Controller
      */
     public function index()
     {
-        // We gebruiken jouw scopeLatest() om de nieuwste eerst te tonen
-        $orders = Order::where('user_id', Auth::id())
-            ->latest()
-            ->paginate(10);
+        // Als de gebruiker admin is, toon ALLE bestellingen
+        if (Auth::user()->isAdmin()) {
+            $orders = Order::latest()->paginate(10);
+        } else {
+            // Anders alleen de eigen bestellingen
+            $orders = Order::where('user_id', Auth::id())
+                ->latest()
+                ->paginate(10);
+        }
 
         return view('orders.index', compact('orders'));
     }
@@ -57,5 +62,22 @@ class OrderController extends Controller
         $order->cancel();
 
         return back()->with('success', 'De bestelling is succesvol geannuleerd.');
+    }
+
+    // Update de status van een bestelling (alleen voor admins)
+    public function updateStatus(Request $request, Order $order)
+    {
+        // Extra beveiliging (hoewel middleware dit ook al doet)
+        if (!Auth::user()->isAdmin()) {
+            abort(403, 'Alleen beheerders kunnen de status wijzigen.');
+        }
+
+        $request->validate([
+            'status' => 'required|in:pending,paid,shipped,completed,cancelled',
+        ]);
+
+        $order->update(['status' => $request->status]);
+
+        return back()->with('success', 'De status van de bestelling is bijgewerkt naar ' . ucfirst($request->status) . '.');
     }
 }

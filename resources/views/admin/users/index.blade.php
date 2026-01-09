@@ -36,12 +36,12 @@
                 </div>
             </div>
 
-            {{-- NOTIFICATIES: Kleuren iets gedempt --}}
+            {{-- NOTIFICATIES --}}
             @if(session('success'))
-                <div class="bg-[#E8F5E9] text-[#1B5E20] border border-[#C8E6C9] p-4 rounded mb-4 text-sm">{{ session('success') }}</div>
+                <x-alert type="success" :message="session('success')" />
             @endif
             @if(session('error'))
-                <div class="bg-[#FFEBEE] text-[#B71C1C] border border-[#FFCDD2] p-4 rounded mb-4 text-sm">{{ session('error') }}</div>
+                <x-alert type="error" :message="session('error')" />
             @endif
 
             {{-- TABEL CONTAINER --}}

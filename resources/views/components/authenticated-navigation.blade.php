@@ -48,8 +48,15 @@
                         </button>
 
                         <div x-show="userOpen" @click.away="userOpen = false" class="absolute right-0 mt-2 w-48 bg-white border border-[#EAE5DE] rounded-md shadow-lg py-1 z-50">
-                            <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-[#8C7B70] hover:bg-[#FDFBF7] hover:text-[#3E2C22]">Dashboard</a>
-                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-[#8C7B70] hover:bg-[#FDFBF7] hover:text-[#3E2C22]">Profiel</a>
+                            @if(Auth::user()->isAdmin())
+                                <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-[#8C7B70] hover:bg-[#FDFBF7] hover:text-[#3E2C22]">Admin Dashboard</a>
+                            @else
+                                <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-[#8C7B70] hover:bg-[#FDFBF7] hover:text-[#3E2C22]">Dashboard</a>
+                            @endif
+
+                            {{-- AANGEPAST: Link naar publiek profiel (profile.show) in plaats van direct bewerken --}}
+                            <a href="{{ route('profile.show', Auth::user()) }}" class="block px-4 py-2 text-sm text-[#8C7B70] hover:bg-[#FDFBF7] hover:text-[#3E2C22]">Profiel</a>
+
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-[#8C7B70] hover:bg-[#FDFBF7] hover:text-[#3E2C22]">Uitloggen</button>

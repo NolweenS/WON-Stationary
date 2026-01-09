@@ -52,12 +52,22 @@ class News extends Model
     //nieuwsafbeelding aan de hand van de URL ophalen
     public function imageUrl():string
     {
-     if($this->image)
-     {
-         return asset('storage/' . $this->image);
-     }
-     //een
-     return asset('images/default.png');
+        if (!$this->image) {
+            return asset('images/no-product-image.png');
+        }
+
+        // Als het pad al begint met 'images/', gebruik het direct
+        if (str_starts_with($this->image, 'images/')) {
+            return asset($this->image);
+        }
+
+        // Als het alleen een bestandsnaam is (van seeder), gebruik placeholder map
+        if (!str_contains($this->image, '/')) {
+            return asset('images/placeholder/' . $this->image);
+        }
+
+        // Anders gebruik storage map
+        return asset('storage/' . $this->image);
     }
 
     //publicatie datum vaststellen

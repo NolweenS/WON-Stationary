@@ -5,53 +5,64 @@ namespace Database\Seeders;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        // We halen de categorieën op die we in de CategorySeeder hebben gemaakt
-        $categories = Category::all();
-
-        // Configuratie van foto's per categorie
-        $productData = [
+        //Definieer de producten per categorie
+        $inventory = [
             'Planners' => [
-                'images' => ['planner1.jpg', 'planner2.jpg', 'planner3.jpg'],
-                'min' => 19.95, 'max' => 34.95
+                ['name' => 'Luxe Planner 1', 'img' => 'planner1.jpg', 'price' => 19.95],
+                ['name' => 'Week Planner 2', 'img' => 'planner2.jpg', 'price' => 24.50],
+                ['name' => 'Dag Planner 3', 'img' => 'planner3.jpg', 'price' => 29.95],
+                ['name' => 'Compact Planner 4', 'img' => 'planner1.jpg', 'price' => 15.00],
             ],
             'Notebooks' => [
-                'images' => ['notebook1.jpg', 'notebook2.jpg', 'notebook3.jpg'],
-                'min' => 12.50, 'max' => 24.95
+                ['name' => 'Notebook Geliniieerd 1', 'img' => 'notebook1.jpg', 'price' => 12.50],
+                ['name' => 'Notebook Blanco 2', 'img' => 'notebook2.jpg', 'price' => 14.95],
+                ['name' => 'Notebook Gestippeld 3', 'img' => 'notebook3.jpg', 'price' => 18.00],
+                ['name' => 'Softcover Notebook 4', 'img' => 'notebook1.jpg', 'price' => 10.00],
             ],
             'Pens & Crayons' => [
-                'images' => ['pens1.jpg', 'pens2.jpg', 'pencil.jpg'],
-                'min' => 2.95, 'max' => 5.00
+                ['name' => 'Balpennen Set 1', 'img' => 'pens1.jpg', 'price' => 4.50],
+                ['name' => 'Kleurpotloden Set 2', 'img' => 'pens2.jpg', 'price' => 5.95],
+                ['name' => 'Grafiet Potlood', 'img' => 'pencil.jpg', 'price' => 1.50],
+                ['name' => 'Luxe Pen 4', 'img' => 'pens1.jpg', 'price' => 8.00],
             ],
             'Stickers' => [
-                'images' => ['stickers1.jpg', 'stickers2.jpg', 'stickers3.jpg'],
-                'min' => 1.50, 'max' => 5.95
+                ['name' => 'Sticker Pakket 1', 'img' => 'stickers1.jpg', 'price' => 3.50],
+                ['name' => 'Planner Stickers 2', 'img' => 'stickers2.jpg', 'price' => 4.25],
+                ['name' => 'Decoratie Stickers 3', 'img' => 'stickers3.jpg', 'price' => 2.95],
+                ['name' => 'Alfabet Stickers 4', 'img' => 'stickers1.jpg', 'price' => 3.00],
             ],
             'Accessoires' => [
-                'images' => ['acc1.jpg', 'acc2.jpg', 'acc3.jpg'],
-                'min' => 4.95, 'max' => 10.00
+                ['name' => 'RVS Schaar', 'img' => 'acc1.jpg', 'price' => 6.50],
+                ['name' => 'Correctie Roller', 'img' => 'acc2.jpg', 'price' => 3.95],
+                ['name' => 'Leren Pennenzak', 'img' => 'acc3.jpg', 'price' => 12.50],
+                ['name' => 'Bureau Organizer 4', 'img' => 'acc1.jpg', 'price' => 9.95],
             ],
         ];
 
-        foreach ($categories as $category) {
-            // We maken 4 producten per categorie aan
-            for ($i = 1; $i <= 4; $i++) {
-                $config = $productData[$category->name];
+        foreach ($inventory as $categoryName => $products) {
+            $category = Category::where('name', $categoryName)->first();
 
-                Product::create([
-                    'category_id' => $category->id,
-                    'name' => $category->name . ' ' . $i,
-                    'slug' => str()->slug($category->name . '-' . $i),
-                    'description' => 'Een prachtig item uit onze ' . $category->name . ' collectie. Perfect voor een georganiseerd bureau.',
-                    'price' => fake()->randomFloat(2, $config['min'], $config['max']),
-                    'stock' => rand(5, 50),
-                    // Pad naar de afbeeldingen
-                    'image' => 'images/placeholder/' . $config['images'][array_rand($config['images'])],
-                ]);
+            if ($category) {
+                foreach ($products as $p) {
+                    // Gebruik updateOrCreate in plaats van create
+                    Product::updateOrCreate(
+                        ['slug' => Str::slug($p['name'])], // Check of deze slug al bestaat
+                        [
+                            'category_id' => $category->id,
+                            'name' => $p['name'],
+                            'description' => 'Een prachtig item uit onze ' . $categoryName . ' collectie. Perfect voor een georganiseerd bureau.',
+                            'price' => $p['price'],
+                            'stock' => rand(10, 100),
+                            'image' => $p['img'],
+                        ]
+                    );
+                }
             }
         }
     }

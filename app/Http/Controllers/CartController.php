@@ -15,9 +15,9 @@ class CartController extends Controller
      */
     public function index()
     {
-
-        $cartItems = CartItem::getCurrentCart();
-        $total = CartItem::cartTotal();
+        // We halen de data dynamisch op via het Model
+        $cartItems = CartItem::getCurrentCart() ?? collect([]);
+        $total = CartItem::cartTotal() ?? 0;
 
         return view('cart.index', compact('cartItems', 'total'));
     }

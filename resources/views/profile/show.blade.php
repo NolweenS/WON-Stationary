@@ -24,19 +24,11 @@
                 <div class="p-8 md:p-12">
                     <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
                         <div class="flex-shrink-0">
-                            @if($user->profile && $user->profile->profile_photo)
-                                <img
-                                    src="{{ asset('storage/' . $user->profile->profile_photo) }}"
-                                    alt="Profile Photo"
-                                    class="w-32 h-32 rounded-full object-cover border-4 border-stone-50 shadow-sm"
-                                >
-                            @else
-                                <div class="w-32 h-32 rounded-full bg-stone-100 flex items-center justify-center border-4 border-white">
-                                    <span class="text-stone-400 text-4xl font-light">
-                                        {{ strtoupper(substr($user->name, 0, 1)) }}
-                                    </span>
-                                </div>
-                            @endif
+                            <img
+                                src="{{ $user->profile->photoUrl() }}"
+                                alt="Profile Photo"
+                                class="w-32 h-32 rounded-full object-cover border-4 border-stone-50 shadow-sm"
+                            >
                         </div>
 
                         <div class="flex-1 text-center md:text-left w-full">
@@ -276,7 +268,7 @@
                                     <div class="flex items-start space-x-4 w-full">
                                         <div class="flex-shrink-0">
                                             @if($message->sender->profile && $message->sender->profile->profile_photo)
-                                                <img src="{{ asset('storage/' . $message->sender->profile->profile_photo) }}" class="w-10 h-10 rounded-full object-cover border border-stone-100">
+                                                <img src="{{ $message->sender->profile->photoUrl() }}" class="w-10 h-10 rounded-full object-cover border border-stone-100">
                                             @else
                                                 <div class="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 font-bold text-xs border border-stone-200">
                                                     {{ substr($message->sender->name, 0, 1) }}
@@ -315,7 +307,7 @@
                                                         <div class="flex items-start space-x-3 bg-stone-50 p-3 rounded-lg">
                                                             <div class="flex-shrink-0">
                                                                 @if($reply->sender->profile && $reply->sender->profile->profile_photo)
-                                                                    <img src="{{ asset('storage/' . $reply->sender->profile->profile_photo) }}" class="w-8 h-8 rounded-full object-cover">
+                                                                    <img src="{{ $reply->sender->profile->photoUrl() }}" class="w-8 h-8 rounded-full object-cover">
                                                                 @else
                                                                     <div class="w-8 h-8 rounded-full bg-white border border-stone-200 flex items-center justify-center text-xs text-stone-500 font-bold">
                                                                         {{ substr($reply->sender->name, 0, 1) }}

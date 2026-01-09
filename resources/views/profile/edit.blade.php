@@ -39,22 +39,20 @@
                             <div class="flex items-center space-x-4">
                                 @if($user->profile && $user->profile->profile_photo)
                                     <img
-                                        src="{{ asset('storage/' . $user->profile->profile_photo) }}"
+                                        src="{{ $user->profile->photoUrl() }}"
                                         alt="Current Photo"
                                         class="w-20 h-20 rounded-full object-cover border-2 border-gray-300"
                                     >
-                                    <form action="{{ route('profile.photo.delete') }}" method="POST" onsubmit="return confirm('Weet je zeker dat je je profielfoto wilt verwijderen?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-semibold underline">
-                                            Verwijder foto
-                                        </button>
-                                    </form>
+                                    <button type="submit" form="delete-photo-form" class="text-red-600 hover:text-red-800 text-sm font-semibold underline">
+                                        Verwijder foto
+                                    </button>
                                 @else
-                                    <div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-2xl font-bold border-2 border-gray-300">
-                                        {{ strtoupper(substr($user->name, 0, 1)) }}
-                                    </div>
-                                    <span class="text-gray-500 text-sm italic">Geen foto ingesteld</span>
+                                    <img
+                                        src="{{ $user->profile->photoUrl() }}"
+                                        alt="Default Avatar"
+                                        class="w-20 h-20 rounded-full object-cover border-2 border-gray-300"
+                                    >
+                                    <span class="text-gray-500 text-sm italic">Standaard avatar</span>
                                 @endif
                             </div>
                         </div>
@@ -134,6 +132,12 @@
                                 Annuleren
                             </a>
                         </div>
+                    </form>
+
+                    {{-- Apart formulier voor verwijderen foto om nesting te voorkomen --}}
+                    <form id="delete-photo-form" action="{{ route('profile.photo.delete') }}" method="POST" onsubmit="return confirm('Weet je zeker dat je je profielfoto wilt verwijderen?')">
+                        @csrf
+                        @method('DELETE')
                     </form>
 
                 </div>
