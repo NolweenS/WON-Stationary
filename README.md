@@ -1,59 +1,347 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# WON-Stationary - Laravel E-commerce Project
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Een moderne e-commerce webapplicatie voor stationary producten, gebouwd met Laravel 11 en Tailwind CSS.
 
-## About Laravel
+## Over het Project
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+WON-Stationary is een full-stack e-commerce platform voor het verkopen van kantoorartikelen en stationary producten. Het project omvat een gebruikersvriendelijke frontend voor klanten en een uitgebreid admin panel voor beheer.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Vereisten
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP >= 8.2
+- Composer >= 2.6
+- Node.js >= 18.x
+- NPM >= 9.x
+- MySQL >= 8.0
+- Git
 
-## Learning Laravel
+## Installatie
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Stap 1: Clone de Repository
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+git clone https://github.com/jouw-username/won-stationary.git
+cd won-stationary
+```
 
-## Laravel Sponsors
+### Stap 2: Installeer PHP Dependencies
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+composer install
+```
 
-### Premium Partners
+### Stap 3: Installeer JavaScript Dependencies
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+npm install
+```
 
-## Contributing
+### Stap 4: Kopieer Environment File
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+# Windows (Command Prompt)
+copy .env.example .env
 
-## Code of Conduct
+# Linux/Mac (Terminal)
+cp .env.example .env
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Stap 5: Genereer Application Key
 
-## Security Vulnerabilities
+```bash
+php artisan key:generate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Configuratie
 
-## License
+### Database Configuratie
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Open het `.env` bestand en pas de database instellingen aan:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=won_stationary
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### Mail Configuratie (Optioneel)
+
+Voor email functionaliteit (zoals registratie bevestigingen):
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your_mailtrap_username
+MAIL_PASSWORD=your_mailtrap_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=noreply@won-stationary.test
+MAIL_FROM_NAME="WON-Stationary"
+```
+
+## Database Setup
+
+### Stap 1: Maak de Database aan
+
+Maak een nieuwe database aan in MySQL:
+
+```sql
+CREATE DATABASE won_stationary CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+### Stap 2: Run Migrations en Seeders
+
+Dit commando maakt alle tabellen aan en vult ze met test data:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+### Stap 3: Create Storage Link
+
+Maak een symbolische link voor het opslaan van geüploade afbeeldingen:
+
+```bash
+php artisan storage:link
+```
+
+### Stap 4: Build Frontend Assets
+
+Compileer de Tailwind CSS en JavaScript:
+
+```bash
+npm run build
+```
+
+Voor development met hot-reload:
+
+```bash
+npm run dev
+```
+
+### Stap 5: Start de Development Server
+
+```bash
+php artisan serve
+```
+
+De applicatie is nu beschikbaar op: `http://localhost:8000`
+
+## Login Credentials
+
+### Admin Account
+
+```
+Email: admin@ehb.be
+Password: Password!321
+```
+
+## Features
+
+### Basis Functionaliteit
+
+**Product Management**
+- Volledig CRUD systeem voor producten
+- Productcategorieën met filtering
+- Afbeelding upload functionaliteit
+- Voorraad beheer
+- Prijsbeheer met kortingen
+
+**Categorie Systeem**
+- 5 hoofdcategorieën: Planners, Notebooks, Pens & Crayons, Stickers, Accessoires
+- Categorieën met beschrijvingen en slugs
+- Producten gelinkt aan categorieën
+
+**Nieuws Sectie**
+- Dynamische nieuwsartikelen
+- Rich text content
+- Auteur attributie
+- Publicatiedatum beheer
+- Featured images
+
+**FAQ Systeem**
+- FAQ categorieën voor organisatie
+- Vraag en antwoord beheer
+- Sorteerbare volgorde
+- Zoekfunctionaliteit
+
+### Gebruikersfuncties
+
+**Authenticatie**
+- Gebruikersregistratie met email verificatie
+- Secure login systeem
+- Password reset functionaliteit
+
+**User Dashboard**
+- Persoonlijk overzicht
+- Profielbewerking
+- Bestellingshistorie
+- Wishlist beheer
+
+**Wishlist**
+- Producten opslaan voor later
+- Eenvoudig toevoegen/verwijderen
+- Overzicht van opgeslagen items
+- sturen vie de link naar vrienden/familie
+
+**Review Systeem**
+- Producten beoordelen met sterren (1-5)
+- Reviews schrijven met titel en tekst
+- Verified purchase badge
+- Helpful counter
+- Review bewerking en verwijdering
+
+**Bestellingen**
+- Volledige orderhistorie
+- Order status tracking
+- Order details met items
+- Factuur informatie
+
+**Profielen**
+- berichten versturen naar gebruikers in het profiel gastenboek
+
+
+### Admin Functionaliteit
+
+**Admin Dashboard**
+- Overzicht statistieken
+- Recente bestellingen
+- Product voorraad monitoring
+- Gebruikersactiviteit
+
+**Product Beheer**
+- Producten toevoegen, bewerken, verwijderen
+- Bulk acties
+- Afbeelding upload
+- Categorie toewijzing
+- Voorraad updates
+
+**Nieuws Beheer**
+- Nieuwsartikelen aanmaken en bewerken
+- Featured image upload
+- Publicatiestatus
+- SEO-vriendelijke slugs
+
+**FAQ Beheer**
+- FAQ categorieën beheren
+- Vragen toevoegen en bewerken
+- Volgorde aanpassen
+- Zoeken en filteren
+
+**User Management**
+- Gebruikers overzicht
+- Account status beheer
+
+### Design & UX
+
+**Responsive Design**
+- Volledig mobielvriendelijk
+
+
+**Kleurenschema**
+- Warm, aards palet met beige en bruintinten
+- Consistent design systeem
+- Toegankelijke contrasten
+
+**Componenten**
+- Herbruikbare Blade components
+- Product cards
+- Review cards
+- Star rating component
+- Alert notifications
+- Button variants
+- Navigation components
+- Footer
+
+### Extra Features
+
+**Zoek & Filter**
+- Real-time zoeken in producten
+- Filteren op categorie
+- Filteren op prijsrange
+- Filteren op voorraad status
+- Sorteren op prijs, naam, populariteit
+
+**Validatie**
+- Server-side validatie voor alle forms
+- Client-side feedback
+- Custom error messages
+- Input sanitization
+
+**Beveiliging**
+- CSRF protection
+- XSS prevention
+- SQL injection protection
+- Password hashing met bcrypt
+- Rate limiting op login
+
+
+## Technologieën
+
+### Backend
+- Laravel 11
+- PHP 8.4
+- MySQL 8.0
+- Eloquent ORM
+
+### Frontend
+- Tailwind CSS 3.0
+- Alpine.js
+- Blade Templates
+- Vite
+
+### Development Tools
+- Composer
+- NPM
+- Git
+- Laravel Breeze (Authentication)
+
+### Testing Tools
+- Mailtrap (Email testing)
+
+## Bronvermeldingen
+
+### Documentatie & Tutorials
+
+**Laravel**
+- Laravel Official Documentation: https://laravel.com/docs
+  Gebruikt voor: Alle Laravel functionaliteit, best practices, en feature implementatie
+
+- Laracasts: https://laracasts.com
+  Gebruikt voor: Video tutorials over Laravel concepts, Eloquent relationships, en authentication
+
+- Laravel Daily (YouTube): https://www.youtube.com/@LaravelDaily
+  Gebruikt voor: Praktische voorbeelden van Laravel features en code snippets
+
+### AI Assistentie
+
+**Claude AI (Anthropic)**
+- Gebruikt voor ondersteuning van projectontwikkeling
+- Specifieke hulp bij: Seeder implementatie, Blade component structuur, validatie logica
+
+### Tools
+
+**Postman**
+- Website: https://www.postman.com
+- Gebruikt voor: API endpoint testing en debugging
+
+**Mailtrap**
+- Website: https://mailtrap.io
+- Gebruikt voor: Email testing in development omgeving
+
+### Design Resources
+
+**Tailwind CSS**
+- Website: https://tailwindcss.com
+- Gebruikt voor: Styling en responsive design
+
+**Google Fonts (Bunny Fonts CDN)**
+- Fonts: Cormorant (serif), Inter (sans-serif)
+- Gebruikt voor: Typografie in het project
+
+## Licentie
+
+Dit project is gemaakt voor educatieve doeleinden als onderdeel van een schoolproject.

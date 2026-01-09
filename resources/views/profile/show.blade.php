@@ -25,7 +25,7 @@
                     <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
                         <div class="flex-shrink-0">
                             <img
-                                src="{{ $user->profile->photoUrl() }}"
+                                src="{{ $user->profile?->photoUrl() ?? 'https://ui-avatars.com/api/?background=f5ebe0&color=d5bdaf&name=' . urlencode($user->name) }}"
                                 alt="Profile Photo"
                                 class="w-32 h-32 rounded-full object-cover border-4 border-stone-50 shadow-sm"
                             >
@@ -35,7 +35,7 @@
                             <div class="flex flex-col md:flex-row justify-between items-center mb-4">
                                 <div>
                                     <h1 class="text-3xl font-medium text-neutral-900 tracking-tight">
-                                        {{ $user->profile->username ?? $user->name }}
+                                        {{ $user->profile?->username ?? $user->name }}
                                     </h1>
                                 </div>
 
@@ -98,7 +98,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3 text-neutral-400">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                             </svg>
-                            Verlanglijstje van {{ $user->profile->username ?? $user->name }}
+                            Verlanglijstje van {{ $user->profile?->username ?? $user->name }}
                         </h3>
                         @auth
                             @if(auth()->id() === $user->id)
@@ -231,7 +231,7 @@
                         @csrf
                         <div class="mb-4">
                             <label for="message" class="block text-sm font-medium text-neutral-700 mb-2">
-                                Laat een bericht achter voor {{ $user->profile->username ?? $user->name }}
+                                Laat een bericht achter voor {{ $user->profile?->username ?? $user->name }}
                             </label>
                             <textarea
                                 name="message"
@@ -280,7 +280,7 @@
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center space-x-2">
                                                     <span class="font-medium text-neutral-900 text-sm">
-                                                        {{ $message->sender->profile->username ?? $message->sender->name }}
+                                                        {{ $message->sender->profile?->username ?? $message->sender->name }}
                                                     </span>
                                                     <span class="text-xs text-stone-400">&bull;</span>
                                                     <span class="text-xs text-stone-400">{{ $message->created_at->diffForHumans() }}</span>
@@ -317,7 +317,7 @@
                                                             <div class="w-full">
                                                                 <div class="flex justify-between items-center">
                                                                     <div class="flex items-center gap-2">
-                                                                        <span class="font-medium text-xs text-neutral-800">{{ $reply->sender->profile->username ?? $reply->sender->name }}</span>
+                                                                        <span class="font-medium text-xs text-neutral-800">{{ $reply->sender->profile?->username ?? $reply->sender->name }}</span>
                                                                         <span class="text-[10px] text-stone-400">{{ $reply->created_at->diffForHumans() }}</span>
                                                                     </div>
                                                                     @auth

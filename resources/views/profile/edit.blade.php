@@ -48,7 +48,7 @@
                                     </button>
                                 @else
                                     <img
-                                        src="{{ $user->profile->photoUrl() }}"
+                                        src="{{ $user->profile?->photoUrl() ?? 'https://ui-avatars.com/api/?background=f5ebe0&color=d5bdaf&name=' . urlencode($user->name) }}"
                                         alt="Default Avatar"
                                         class="w-20 h-20 rounded-full object-cover border-2 border-gray-300"
                                     >
