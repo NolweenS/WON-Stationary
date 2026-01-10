@@ -101,9 +101,21 @@
             <h2 class="text-2xl font-serif text-primary mb-4">Blijf op de hoogte</h2>
             <p class="text-secondary font-light mb-8 max-w-2xl mx-auto">Schrijf je in voor onze nieuwsbrief en ontvang inspiratie, exclusieve aanbiedingen en updates over nieuwe collecties.</p>
 
-            <form class="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto">
-                <input type="email" placeholder="Jouw e-mailadres" class="w-full px-4 py-3 rounded-full border border-border bg-nude text-primary focus:ring-secondary focus:border-secondary transition">
-                <button type="button" class="w-full sm:w-auto px-8 py-3 bg-primary text-white rounded-full hover:bg-[#2A1E17] transition duration-300 font-medium">Inschrijven</button>
+            @if(session('success'))
+                <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-lg shadow-sm text-sm max-w-md mx-auto">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            <form action="{{ route('newsletter.subscribe') }}" method="POST" class="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto">
+                @csrf
+                <div class="w-full">
+                    <input type="email" name="email" placeholder="Jouw e-mailadres" required class="w-full px-4 py-3 rounded-full border border-border bg-nude text-primary focus:ring-secondary focus:border-secondary transition">
+                    @error('email')
+                        <p class="text-red-500 text-xs mt-1 text-left ml-2">{{ $message }}</p>
+                    @enderror
+                </div>
+                <button type="submit" class="w-full sm:w-auto px-8 py-3 bg-primary text-white rounded-full hover:bg-[#2A1E17] transition duration-300 font-medium whitespace-nowrap h-fit">Inschrijven</button>
             </form>
         </div>
     </div>

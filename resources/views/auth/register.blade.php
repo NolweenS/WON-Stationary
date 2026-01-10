@@ -13,7 +13,7 @@
         <div class="sm:mx-auto sm:w-full sm:max-w-md">
             <div class="bg-white py-8 px-6 shadow-sm border border-stone-100 rounded-2xl sm:px-10">
 
-                <form method="POST" action="{{ route('register') }}" class="space-y-5">
+                <form method="POST" action="{{ route('register') }}" class="space-y-5" onsubmit="return validateForm()">
                     @csrf
 
                     <div>
@@ -48,7 +48,9 @@
                                       type="password"
                                       name="password"
                                       required
+                                      minlength="8"
                                       autocomplete="new-password" />
+                        <p class="text-xs text-neutral-400 mt-1">Minimaal 8 karakters</p>
                         <x-input-error :messages="$errors->get('password')" class="mt-2" />
                     </div>
 
@@ -60,6 +62,7 @@
                                       name="password_confirmation"
                                       required
                                       autocomplete="new-password" />
+                        <p id="password-match-error" class="text-xs text-red-500 mt-1 hidden">Wachtwoorden komen niet overeen</p>
                         <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
                     </div>
 
@@ -82,4 +85,33 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function validateForm() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('password_confirmation').value;
+            const errorMsg = document.getElementById('password-match-error');
+
+            if (password !== confirmPassword) {
+                errorMsg.classList.remove('hidden');
+                return false;
+            } else {
+                errorMsg.classList.add('hidden');
+                return true;
+            }
+        }
+
+        // Real-time check
+        document.getElementById('password_confirmation').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            const errorMsg = document.getElementById('password-match-error');
+
+            if (confirmPassword && password !== confirmPassword) {
+                errorMsg.classList.remove('hidden');
+            } else {
+                errorMsg.classList.add('hidden');
+            }
+        });
+    </script>
 </x-guest-layout>

@@ -86,7 +86,7 @@ MAIL_FROM_NAME="WON-Stationary"
 
 ### Stap 1: Maak de Database aan
 
-Maak een nieuwe database aan in MySQL:
+Maak een nieuwe database aan in MySQL (DBngin = MYSQL-WON):
 
 ```sql
 CREATE DATABASE won_stationary CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -304,7 +304,12 @@ Password: Password!321
 
 ## Bronvermeldingen
 
-### Documentatie & Tutorials
+### Fotografie
+- **Unsplash**: Gebruikt voor foto's van Justin Morgan, Gabrielle Henderson, Stylite Yu en Nihal Demirci.
+- **Kaboompics**: Gebruikt voor foto's van planners, koffie en kantoorbenodigdheden.
+- **Pexels**: Gebruikt voor de foto van Karola G.
+
+### Documentatie
 
 **Laravel**
 - Laravel Official Documentation: https://laravel.com/docs
